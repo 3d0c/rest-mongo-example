@@ -1,0 +1,16 @@
+include variables.mk
+include Makefile
+
+change-validation: version
+	@echo ">>> download packages"
+	@go mod tidy
+	@echo ">>> running unit tests"
+	@make run-uts
+	@echo ">>> code coverage"
+	@make cover
+	@echo ">>> build binary"
+	@make build
+	@echo ">>> linting"
+	@make lint
+	@echo ">>> running"
+	build/lyre-be version

@@ -1,0 +1,14 @@
+# local config is being used for running component locally for testing and debugging purposes
+
+# configuration of the API HTTP server
+server:
+  apiVersion: v1
+  address: ":443"
+  JWTSecret: "BXokUG7Qwhl8795D4Ry+jIYcrCcrx"
+
+logger:
+  level: info
+  addCaller: true
+  outputPaths:
+    - stdout
+    - /opt/lyre-be/logs/lyre-be.log
