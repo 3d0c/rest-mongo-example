@@ -1,6 +1,5 @@
 # local config is being used for running component locally for testing and debugging purposes
 
-# configuration of the API HTTP server
 server:
   apiVersion: v1
   address: ":8443"
@@ -11,3 +10,8 @@ logger:
   outputPaths:
     - stdout
     - tmp/lyre-be.log
+
+database:
+  URI: "mongodb://localhost:27017"
+  name: "v4"
+  timeout: 1

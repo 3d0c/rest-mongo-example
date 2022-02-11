@@ -1,0 +1,70 @@
+// Create sample application
+
+db.applications.drop()
+db.applications.createIndex( { "name": 1, "path": 1 }, { unique: true } )
+
+db.applications.insertOne({
+	_id: ObjectId("620524994a84ecd9ac78f620"),
+	name: "Sample One",
+	path: "/sample"
+})
+
+db.applications.insertOne({
+	_id: ObjectId("620527c04a84ecd9ac78f622"),
+	name: "Another One",
+	path: "/another"
+})
+
+// Create sample user
+
+db.users.drop()
+db.users.createIndex( { "name": 1, "email":1 }, { unique: true } )
+
+db.users.insertOne(
+	{
+		name: "admin", 
+		email: "root@dev.null",
+		acl: [
+			{
+				application_id: ObjectId("620524994a84ecd9ac78f620"),
+				permission_id: ObjectId("620524134a84ecd9ac78f61f")
+			},
+			{
+				application_id: ObjectId("620527c04a84ecd9ac78f622"),
+				permission_id: ObjectId("620524134a84ecd9ac78f61f")
+			}			
+		]
+	}
+)
+
+// Create permissions
+
+db.permissions.drop()
+db.permissions.createIndex( { "name": 1 }, { unique: true } )
+
+db.permissions.insertOne(
+	{
+		_id: ObjectId("620524134a84ecd9ac78f61d"),
+		"name": "Read-Only", 
+		"description": "Read only access to Application",
+		"methods": ["GET"]
+	}
+)
+
+db.permissions.insertOne(
+	{
+		_id : ObjectId("620524134a84ecd9ac78f61e"),
+		"name": "Read-Write", 
+		"description": "Read and Create access to Application",
+		"methods": ["GET", "POST"]
+	}
+)
+
+db.permissions.insertOne(
+	{
+		"_id" : ObjectId("620524134a84ecd9ac78f61f"),
+		"name": "Full Access", 
+		"description": "Full access to Application",
+		"methods": ["GET", "POST", "PUT", "DELETE"]
+	}
+)

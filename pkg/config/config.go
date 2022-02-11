@@ -9,23 +9,32 @@ var (
 	once     sync.Once
 )
 
-type (
-	Server struct {
-		APIVersion string
-		Address    string
-		JWTSecret  string
-	}
+// Server config secon
+type Server struct {
+	APIVersion string
+	Address    string
+	JWTSecret  string
+}
 
-	Logger struct {
-		Level       string
-		AddCaller   bool
-		OutputPaths []string
-	}
-)
+// Logger config section
+type Logger struct {
+	Level       string
+	AddCaller   bool
+	OutputPaths []string
+}
 
+// Database config section
+type Database struct {
+	URI     string
+	Name    string
+	Timeout int
+}
+
+// Config is a complete config file
 type Config struct {
 	Server
 	Logger
+	Database
 }
 
 // TheConfig config singleton
