@@ -15,8 +15,7 @@ const (
 
 // IsAuthorized is a middleware which checks whether request contains
 // an authorization token, checks it's validity and passes AuthClaim to
-// the request context. It doesn't check token for persistance in db.
-// It is done by usermodel constructor.
+// the request context.
 func IsAuthorized(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 	var (
 		authHeader string
@@ -31,10 +30,6 @@ func IsAuthorized(_ http.ResponseWriter, r *http.Request) (interface{}, int, err
 	tokenString := authHeader[len(bearerSchemePrefix):]
 
 	if claims, err = helpers.VerifyToken(tokenString); err != nil {
-		return nil, http.StatusUnauthorized, err
-	}
-
-	if _, err = claims.GetUserID(); err != nil {
 		return nil, http.StatusUnauthorized, err
 	}
 

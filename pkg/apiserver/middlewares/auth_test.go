@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	testUserID  = "123"
-	testUserIDi = 123
+	testUserID = "123"
 )
 
 func TestIsAuthorized(t *testing.T) {
@@ -88,7 +87,7 @@ func TestIsAuthorizedContext(t *testing.T) {
 	}
 
 	r = withHeaders(
-		httptest.NewRequest(http.MethodPut, "https:", nil),
+		httptest.NewRequest(http.MethodPut, "https://a/api/v1/application/u", nil),
 		map[string]string{
 			authHeaderKey: bearerSchemePrefix + validToken,
 		},
@@ -104,10 +103,10 @@ func TestIsAuthorizedContext(t *testing.T) {
 	claims, ok := v.(*helpers.AuthClaims)
 	assert.Equal(t, true, ok)
 
-	obtained, err := claims.GetUserID()
+	obtained := claims.GetUserID()
 	assert.Nil(t, err)
 
-	assert.Equal(t, testUserIDi, obtained)
+	assert.Equal(t, testUserID, obtained)
 }
 
 func withHeaders(req *http.Request, headers map[string]string) *http.Request {

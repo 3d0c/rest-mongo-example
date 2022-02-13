@@ -1,0 +1,30 @@
+// Default permissions
+
+db.permissions.drop()
+db.permissions.createIndex( { "name": 1 }, { unique: true } )
+
+db.permissions.insertOne(
+	{
+		"name": "Read-Only", 
+		"description": "Read only access to Application",
+		"methods": ["GET"]
+	}
+)
+
+db.permissions.insertOne(
+	{
+		"name": "Read-Write", 
+		"description": "Read and Create access to Application",
+		"methods": ["GET", "POST"]
+	}
+)
+
+db.permissions.insertOne(
+	{
+		"name": "Full Access", 
+		"description": "Full access to Application",
+		"methods": ["GET", "POST", "PUT", "DELETE"]
+	}
+)
+
+// Default applications

@@ -16,19 +16,19 @@ func TestTokenUserID(t *testing.T) {
 	testCases := []struct {
 		description string
 		input       string
-		expected    int
+		expected    string
 		assertFn    func(assert.TestingT, interface{}, ...interface{}) bool
 	}{
 		{
 			description: "Happy Pass",
 			input:       strUserID,
-			expected:    intUserID,
+			expected:    strUserID,
 			assertFn:    assert.Nil,
 		},
 		{
 			description: "Empty userID",
 			input:       "",
-			expected:    0,
+			expected:    "",
 			assertFn:    assert.NotNil,
 		},
 	}
@@ -41,8 +41,7 @@ func TestTokenUserID(t *testing.T) {
 			authClaim, err := VerifyToken(tokenString)
 			assert.Nil(t, err)
 
-			obtained, err := authClaim.GetUserID()
-			testCase.assertFn(t, err)
+			obtained := authClaim.GetUserID()
 
 			assert.Equal(t, testCase.expected, obtained)
 		})
