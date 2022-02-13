@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -18,8 +17,8 @@ type AuthClaims struct {
 
 // GetUserID is a userID getter. Do not use UserID field directly.
 // It should be exported because of JSON marshalling.
-func (a *AuthClaims) GetUserID() (int, error) {
-	return strconv.Atoi(a.UserID)
+func (a *AuthClaims) GetUserID() string {
+	return a.UserID
 }
 
 // CreateToken generates token string

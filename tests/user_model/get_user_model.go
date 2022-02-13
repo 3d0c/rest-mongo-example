@@ -29,7 +29,7 @@ func main() {
 		log.Fatalf("Error creating user model - %s\n", err)
 	}
 
-	if result, err = user.Find(); err != nil {
+	if result, err = user.Find(""); err != nil {
 		log.Fatalf("Error getting user - %s\n", err)
 	}
 

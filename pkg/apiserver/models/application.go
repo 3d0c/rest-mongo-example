@@ -5,13 +5,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// AppDetails nolint
-type AppDetails struct {
-	ID   primitive.ObjectID `bson:"_id,omitempty"`
-	Name string             `bson:"name,omitempty"`
-	Path string             `bson:"path,omitempty"`
-}
-
 // ApplicationScheme model
 type ApplicationScheme struct {
 	ID   primitive.ObjectID `bson:"_id,omitempty"`

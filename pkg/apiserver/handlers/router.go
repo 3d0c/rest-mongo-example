@@ -32,6 +32,8 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 		filepath.Join(root, "/sessions"),
 		middlewares.Chain(
 			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
 			sessionsHandler().remove,
 		),
 	)

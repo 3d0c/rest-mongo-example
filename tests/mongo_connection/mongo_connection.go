@@ -23,7 +23,7 @@ func main() {
 	config.TheConfig().Database.Name = "testing"
 	config.TheConfig().Database.Timeout = 1
 
-	models.DB().RunCommand(context.TODO(), status).Decode(&result)
+	_ = models.DB().RunCommand(context.TODO(), status).Decode(&result)
 
 	if result.Version == "" {
 		log.Fatalf("Error getting MongoDB version for %s:%s", config.TheConfig().Database.URI, config.TheConfig().Database.Name)

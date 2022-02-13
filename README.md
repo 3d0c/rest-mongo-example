@@ -119,3 +119,51 @@ POST localhost:8443/api/v1/another/documents
 ```
 
 As a result user will get `403 Forbidden` because there is no such method in allowed list.
+
+# Routing chain
+
+Regarding ACL implementation adding new routes should conform following rule:
+
+- `IsAuthorized` Checks whether request has a valid token
+   
+- `GetUser` Try to get complete user information
+
+- `IsPermit` Matches permissions with request
+	
+
+Example for some application:
+
+```go
+	r.Get(
+		filepath.Join(root, "/myapplication"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			logHandler().get,
+		),
+	)
+```
+
+Example for main application, removing current session (logout):
+
+```go
+	r.Delete(
+		filepath.Join(root, "/sessions"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			// Take a look, that there is no IsPermit middleware
+			sessionsHandler().remove,
+		),
+	)
+```
+
+
+# TODO
+
+- Unit tests for models using `mongo-mock`
+- Database initialisation script/app
+- Dockerfile
+- CI/CD pipline
+- Integration (e2e) test

@@ -8,12 +8,26 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// UserSchemeType name for context
+type UserSchemeType struct{}
+
 // UserScheme params
 type UserScheme struct {
 	ID    primitive.ObjectID `bson:"_id,omitempty"`
 	Name  string             `bson:"name"`
 	Email string             `bson:"email"`
 	ACL   []ACLScheme        `bson:"acl"`
+}
+
+// GetPermission returns permission by application name (mean path)
+func (u *UserScheme) GetPermission(name string) *PermissionScheme {
+	for _, acl := range u.ACL {
+		if acl.Application.Path == name {
+			return acl.Permissions
+		}
+	}
+
+	return nil
 }
 
 // User model
@@ -32,7 +46,7 @@ func NewUser() (*User, error) {
 
 // Find single user by id
 // TODO ADD USERID AS AN ARG AND PASS IT INTO completeUserModel as $match!!!
-func (u *User) Find() (*UserScheme, error) {
+func (u *User) Find(userID string) (*UserScheme, error) {
 	var (
 		result UserScheme
 		cursor *mongo.Cursor
