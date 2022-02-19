@@ -167,3 +167,6 @@ Example for main application, removing current session (logout):
 - Dockerfile
 - CI/CD pipline
 - Integration (e2e) test
+
+# Advise
+- GitHub was connected to JIRA, so now we can mention issues directly on PRs or branches
