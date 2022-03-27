@@ -5,8 +5,13 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/teal-seagull/lyre-be-v4/pkg/config"
+)
+
+const (
+	cost = 11
 )
 
 // AuthClaims embeddes StandardClaims and stores UserID
@@ -63,4 +68,27 @@ func VerifyToken(tokenString string) (*AuthClaims, error) {
 	}
 
 	return token.Claims.(*AuthClaims), nil
+}
+
+// HashPassword hashes password with bcrypt
+func HashPassword(password string) (string, error) {
+	var (
+		hash []byte
+		err  error
+	)
+
+	if hash, err = bcrypt.GenerateFromPassword([]byte(password), cost); err != nil {
+		return "", err
+	}
+
+	return string(hash), nil
+}
+
+// ComparePasswords compares password with hash
+func ComparePasswords(hash string, password string) bool {
+	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
+		return false
+	}
+
+	return true
 }

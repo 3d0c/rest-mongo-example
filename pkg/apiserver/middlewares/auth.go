@@ -35,6 +35,7 @@ func IsAuthorized(_ http.ResponseWriter, r *http.Request) (interface{}, int, err
 
 	ctx := r.Context()
 	ctx = context.WithValue(ctx, helpers.AuthClaims{}, claims)
+	ctx = context.WithValue(ctx, helpers.TokenStringType{}, tokenString)
 
 	*r = *r.WithContext(ctx)
 

@@ -14,10 +14,10 @@ import (
 
 func main() {
 	var (
-		result *models.UserScheme
-		user   *models.User
-		b      []byte
-		err    error
+		us   *models.UserScheme = &models.UserScheme{Name: "user1"}
+		user *models.User
+		b    []byte
+		err  error
 	)
 
 	// Init config instance and override options
@@ -29,11 +29,11 @@ func main() {
 		log.Fatalf("Error creating user model - %s\n", err)
 	}
 
-	if result, err = user.Find(""); err != nil {
+	if us, err = user.FindByName(us); err != nil {
 		log.Fatalf("Error getting user - %s\n", err)
 	}
 
-	if b, err = json.MarshalIndent(result, "", "    "); err != nil {
+	if b, err = json.MarshalIndent(us, "", "    "); err != nil {
 		log.Fatalf("Error marshalling result - %s\n", b)
 	}
 

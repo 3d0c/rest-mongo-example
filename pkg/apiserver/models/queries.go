@@ -4,7 +4,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func completeUserModel() []bson.M {
+func completeUserModel(match bson.M) []bson.M {
 	return []bson.M{
 		{
 			"$unwind": "$acl",
@@ -65,6 +65,9 @@ func completeUserModel() []bson.M {
 			"$replaceRoot": bson.M{
 				"newRoot": "$aclDetails",
 			},
+		},
+		{
+			"$match": match,
 		},
 	}
 }

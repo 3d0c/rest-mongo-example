@@ -11,7 +11,7 @@ import (
 
 // IsPermit middleware should be third after IsAuthorized and GetUser
 //
-// It matches user permission with application math and method
+// It matches user permission with application path and method
 func IsPermit(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 	var (
 		appname string

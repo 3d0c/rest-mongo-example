@@ -17,23 +17,21 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 
 	r := chi.NewRouter()
 
-	// Auth routes, available for all
-	//
-	// Login = create session, former POST /auth/login
+	// Auth route, available for all
 	r.Post(
 		filepath.Join(root, "/sessions"),
 		middlewares.Chain(
+			middlewares.IsValidContentType,
 			sessionsHandler().create,
 		),
 	)
 
-	// Logout = delete session, former POST /auth/logout
+	// Auth route, available for logged in user, so it should have proper token
 	r.Delete(
 		filepath.Join(root, "/sessions"),
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
-			middlewares.IsPermit,
 			sessionsHandler().remove,
 		),
 	)
