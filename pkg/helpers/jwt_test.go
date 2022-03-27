@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/dgrijalva/jwt-go"
@@ -81,4 +82,19 @@ func TestTokenString(t *testing.T) {
 			assert.NotNil(t, err)
 		})
 	}
+}
+
+func TestHashPassword(t *testing.T) {
+	const (
+		password = "default_password"
+	)
+
+	hash, err := HashPassword(password)
+	assert.Nil(t, err)
+
+	// do not remove. for testing purposes
+	fmt.Printf("%s\n", hash)
+
+	result := ComparePasswords(hash, password)
+	assert.True(t, result)
 }

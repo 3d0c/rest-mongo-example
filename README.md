@@ -1,6 +1,6 @@
 # ACL
 
-### Complete scheme of how does ACL works
+### Complete scheme of how does ACL work
 
 Core objects of ACL:
 
@@ -40,7 +40,7 @@ Mandatory fields:
 Permission is what particular user allowed to do with particular application. There are three default permissions:
 
 - `Read-Only` Allowed API method is `GET`
-- `Read-Write` Allowed API method are `GET`, `POST`
+- `Read-Write` Allowed API methods are `GET`, `POST`
 - `Full Access` Allowed API methods are `GET`, `POST`, `PUT`, `DELETE`
 
 To create these permissions one can use `fixtures/mongo.default`
@@ -49,7 +49,7 @@ To create these permissions one can use `fixtures/mongo.default`
 
 Suppose there is a logged in user, which has valid token. On each request we're getting a complete `user` model, which could be represented as a JSON like:
 
-```json
+```javascript
 {
 	"_id" : ObjectId("620527ed4a84ecd9ac78f623"),
 	"name" : "admin",
@@ -159,14 +159,144 @@ Example for main application, removing current session (logout):
 	)
 ```
 
+# API Specification
+
+### 1. Create a session (login)
+
+Getting session token, which must be provided with all others API calls as
+header `Authorization: Bearer TOKEN`
+
+Request:
+
+```applescript
+# Endpoint
+POST /v1/sessions
+
+# Expected content type
+Content-Type: "application/json"
+
+# Payload
+{
+	"user_name": (string)
+	"password":  (string)
+}
+# or use email instead of user_name
+{
+	"email":    (string)
+	"password": (string)
+}
+```
+
+Response:
+
+```applescript
+Content-Type: "application/json"
+
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+404 Not found
+503 Internal server error
+
+# Body
+{
+	"token": (string)
+}
+```
+
+Examples:
+
+```applescript
+# Happy pass
+curl -v -XPOST -H "Content-Type: application/json" \
+-d '{"user_name": "admin", "password": "default_password"}' \
+localhost:8443/v1/sessions
+
+# Response
+< HTTP/1.1 200 OK
+< Date: Sat, 26 Mar 2022 11:48:34 GMT
+< Content-Length: 216
+< Content-Type: text/plain; charset=utf-8
+<
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJPYmplY3RJRChcIjYyMDY2YWVhNmQ0NzNmYmUwYWJmNjVmZFwiKSIsImV4cCI6MTY0ODI5ODkxNCwiaXNzIjoibHlyZS1iZS12NCJ9.O9j5_kcrseTN02ZrCKrEtow7tfPByW8RDfOn0MXP0vM"
+}
+
+```
+
+```applescript
+# User not found
+curl -v -XPOST -H "Content-Type: application/json" \
+-d '{"user_name": "nosuchuser", "password": "default_password"}' \
+localhost:8443/v1/sessions
+
+# Response
+< HTTP/1.1 404 Not Found
+< Date: Sat, 26 Mar 2022 11:53:46 GMT
+< Content-Length: 0
+```
+
+```applescript
+# Malformed request
+curl -v -XPOST -H "Content-Type: application/json" -d \
+'{"user_name": "nosuchuser"}' \
+localhost:8443/v1/sessions
+
+#Response
+< HTTP/1.1 400 Bad Request
+< Date: Sat, 26 Mar 2022 11:56:16 GMT
+< Content-Length: 0
+```
+
+### 2. Remove the session (logout)
+
+Removes session token from `sessions` collection. So it's no more possible to use it. Please note, that this method doesn't check of existence of passed token in database, if token is valid it tries to remove it anyway. It's done for performance reasons, not to do extra database queries.
+
+Request:
+
+```applescript
+# Endpoint
+DELETE /v1/sessions
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+204 No content
+400 Bad request
+403 Forbidden
+404 Not found
+503 Internal server error
+```
+
+Please note, the `DELETE` method returns empty body. Only the status code.
+
+Examples:
+
+```applescript
+# Request
+curl -v -XDELETE -H \
+"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjA2NmFlYTZkNDczZmJlMGFiZjY1ZmQiLCJleHAiOjE2NDgzNzg0MjYsImlzcyI6Imx5cmUtYmUtdjQifQ.FVV0ZSTOCxJXJmh0hdxHdd61saoSPK9MANovhiEtvjQ" \
+localhost:8443/v1/sessions
+
+# Response
+< HTTP/1.1 204 No Content
+< Date: Sun, 27 Mar 2022 09:54:12 GMT
+```
+
+
 
 # TODO
 
-- Unit tests for models using `mongo-mock`
 - Database initialisation script/app
 - Dockerfile
 - CI/CD pipline
 - Integration (e2e) test
-
-# Advise
-- GitHub was connected to JIRA, so now we can mention issues directly on PRs or branches

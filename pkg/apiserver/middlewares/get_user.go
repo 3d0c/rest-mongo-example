@@ -29,8 +29,8 @@ func GetUser(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error casting to *helpers.AuthClaim")
 	}
 
-	if user, err = userModel.Find(claims.GetUserID()); err != nil {
-		return nil, http.StatusUnauthorized, fmt.Errorf("no such user found - %s", err)
+	if user, err = userModel.FindByID(claims.GetUserID()); err != nil {
+		return nil, http.StatusUnauthorized, fmt.Errorf("error finding user '%s' - %s", claims.GetUserID(), err)
 	}
 
 	ctx := r.Context()

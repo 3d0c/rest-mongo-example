@@ -61,6 +61,11 @@ db.users.aggregate([
         $replaceRoot: {
             newRoot: '$aclDetails'
         }
+    },
+    {
+    	$match: {
+    		name: 'user1xcv'
+    	}
     }    
 ]).pretty()
 ```

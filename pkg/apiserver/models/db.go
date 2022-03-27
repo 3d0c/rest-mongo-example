@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	timeout  = 10 * time.Second
 	instance *mongo.Client
 	once     sync.Once
 )
@@ -46,7 +47,6 @@ func connectDatabase() (*mongo.Client, error) {
 		err    error
 	)
 
-	timeout := time.Duration(config.TheConfig().Database.Timeout) * time.Second
 	opt := options.Client().ApplyURI(config.TheConfig().Database.URI)
 
 	ctx, cancel = context.WithTimeout(context.Background(), timeout)
