@@ -95,6 +95,6 @@ func TestHashPassword(t *testing.T) {
 	// do not remove. for testing purposes
 	fmt.Printf("%s\n", hash)
 
-	result := ComparePasswords(hash, password)
+	result := CompareHashWithPasswords(hash, password)
 	assert.True(t, result)
 }

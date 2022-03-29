@@ -7,10 +7,10 @@ import (
 
 // PermissionScheme nolint
 type PermissionScheme struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty"`
-	Name        string             `bson:"name,omitempty"`
-	Description string             `bson:"description,omitempty"`
-	Methods     []string           `bson:"methods,omitempty"`
+	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name        string             `bson:"name,omitempty" json:"name"`
+	Description string             `bson:"description,omitempty" json:"description"`
+	Methods     []string           `bson:"methods,omitempty" json:"methods,omitempty"`
 }
 
 // IsAllowed checks is method allowed or not

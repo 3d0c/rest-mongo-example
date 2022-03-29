@@ -8,7 +8,7 @@ db.users.aggregate([
 	{
 		$lookup: {
 			from: "applications",
-			localField: "acl.application_id",
+			localField: "acl.application._id",
 			foreignField: "_id",
 			as: "acl.app_details"
 		}
@@ -16,7 +16,7 @@ db.users.aggregate([
 	{
 		$lookup: {
 			from: "permissions",
-			localField: "acl.permission_id",
+			localField: "acl.permissions._id",
 			foreignField: "_id",
 			as: "acl.perm_details"
 		}
@@ -64,7 +64,7 @@ db.users.aggregate([
     },
     {
     	$match: {
-    		name: 'user1xcv'
+
     	}
     }    
 ]).pretty()

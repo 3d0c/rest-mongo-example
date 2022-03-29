@@ -17,7 +17,8 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 
 	r := chi.NewRouter()
 
-	// Auth route, available for all
+	// Authentication
+	// Login. Available for all
 	r.Post(
 		filepath.Join(root, "/sessions"),
 		middlewares.Chain(
@@ -25,14 +26,65 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 			sessionsHandler().create,
 		),
 	)
-
-	// Auth route, available for logged in user, so it should have proper token
+	// Logout
 	r.Delete(
 		filepath.Join(root, "/sessions"),
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
 			sessionsHandler().remove,
+		),
+	)
+
+	// Users management
+	// List all users in the system.
+	r.Get(
+		filepath.Join(root, "/users"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			usersHandler().get,
+		),
+	)
+	// Get specific user
+	r.Get(
+		filepath.Join(root, "/users/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			usersHandler().getByID,
+		),
+	)
+	// Create user
+	r.Post(
+		filepath.Join(root, "/users"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			usersHandler().create,
+		),
+	)
+	// Update user
+	r.Put(
+		filepath.Join(root, "/users/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			usersHandler().update,
+		),
+	)
+	// Remove user
+	r.Delete(
+		filepath.Join(root, "/users/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			usersHandler().remove,
 		),
 	)
 

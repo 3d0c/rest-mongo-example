@@ -35,7 +35,7 @@ func CreateToken(userID string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &AuthClaims{
 		userID,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 60).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 43200).Unix(),
 			Issuer:    "lyre-be-v4",
 		},
 	})
@@ -84,8 +84,8 @@ func HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-// ComparePasswords compares password with hash
-func ComparePasswords(hash string, password string) bool {
+// CompareHashWithPasswords compares password with hash
+func CompareHashWithPasswords(hash string, password string) bool {
 	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
 		return false
 	}
