@@ -14,24 +14,24 @@ import (
 // It matches user permission with application path and method
 func IsPermit(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 	var (
-		appname string
-		// err  error
-		user *models.UserScheme
-		perm *models.PermissionScheme
+		appPath string
+		user    *models.UserScheme
+		perm    *models.PermissionScheme
 	)
 
-	getAppName := func(path string) string {
-		root := "/" + config.TheConfig().Server.APIVersion
-		part := strings.TrimPrefix(path, root)
+	getAppPath := func(path string) string {
+		root := "/" + config.TheConfig().Server.APIVersion + "/"
+		path = strings.TrimPrefix(path, root)
 
-		if len(part) < 1 {
+		parts := strings.Split(path, "/")
+		if len(parts) < 1 {
 			return ""
 		}
 
-		return strings.Split(part, "/")[1]
+		return "/" + parts[0]
 	}
 
-	if appname = getAppName(r.URL.Path); appname == "" {
+	if appPath = getAppPath(r.URL.Path); appPath == "" {
 		return nil, http.StatusForbidden, fmt.Errorf("error parsing '%s' - unexpected path", r.URL.Path)
 	}
 
@@ -39,12 +39,12 @@ func IsPermit(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) 
 		return nil, http.StatusInternalServerError, fmt.Errorf("error casting to *models.UserScheme")
 	}
 
-	if perm = user.GetPermission(appname); perm == nil {
-		return nil, http.StatusForbidden, fmt.Errorf("user doesn't have access to appplication '%s'", appname)
+	if perm = user.GetPermission(appPath); perm == nil {
+		return nil, http.StatusForbidden, fmt.Errorf("user doesn't have access to appplication '%s'", appPath)
 	}
 
 	if !perm.IsAllowed(r.Method) {
-		return nil, http.StatusForbidden, fmt.Errorf("user doesn't have such permission '%s' to application '%s'", r.Method, appname)
+		return nil, http.StatusForbidden, fmt.Errorf("user doesn't have such permission '%s' to application '%s'", r.Method, appPath)
 	}
 
 	return nil, http.StatusOK, nil

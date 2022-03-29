@@ -9,6 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"github.com/teal-seagull/lyre-be-v4/pkg/helpers"
 )
 
 // UserSchemeType name for context
@@ -33,10 +35,10 @@ func (u *UserScheme) Bind(r *http.Request) error {
 	return nil
 }
 
-// GetPermission returns permission by application name (mean path)
-func (u *UserScheme) GetPermission(name string) *PermissionScheme {
+// GetPermission returns permission by application path
+func (u *UserScheme) GetPermission(path string) *PermissionScheme {
 	for _, acl := range u.ACL {
-		if acl.Application.Path == name {
+		if acl.Application.Path == path {
 			return acl.Permissions
 		}
 	}
@@ -102,6 +104,34 @@ func (u *User) FindByName(us *UserScheme) (*UserScheme, error) {
 	return us, nil
 }
 
+// Find finds all
+func (u *User) Find() ([]UserScheme, error) {
+	var (
+		result []UserScheme
+		elem   UserScheme
+		cursor *mongo.Cursor
+		err    error
+	)
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	if cursor, err = u.Aggregate(ctx, completeUserModel(bson.M{})); err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		if err = cursor.Decode(&elem); err != nil {
+			return nil, err
+		}
+
+		result = append(result, elem)
+	}
+
+	return result, nil
+}
+
 // find general find user function, expects $match returns complete user model
 // @index uniq name
 // @index uniq email
@@ -131,7 +161,87 @@ func (u *User) find(match bson.M) (*UserScheme, error) {
 	return nil, fmt.Errorf("nothing found")
 }
 
-// MarshalJSON clean password field on response
+// Create creates new user document into `users` collection
+// returns oid as hex encoded string and error
+// @TODO add validation for IDs of applications and permission check its existence
+func (u *User) Create(user *UserScheme) (string, error) {
+	var (
+		result *mongo.InsertOneResult
+		oid    primitive.ObjectID
+		ok     bool
+		err    error
+	)
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Please note, that Password at this step is plain, hash it first
+	if *user.Password, err = helpers.HashPassword(*user.Password); err != nil {
+		return "", err
+	}
+
+	if result, err = u.InsertOne(ctx, user); err != nil {
+		return "", err
+	}
+
+	if oid, ok = result.InsertedID.(primitive.ObjectID); !ok {
+		return "", fmt.Errorf("error convering InsertID to ObjectId")
+	}
+
+	return oid.Hex(), nil
+}
+
+// Update updates specific user, pretty the same as Create method
+func (u *User) Update(uid string, user *UserScheme) error {
+	var (
+		oid primitive.ObjectID
+		err error
+	)
+
+	if oid, err = primitive.ObjectIDFromHex(uid); err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	if user.Password != nil {
+		if *user.Password, err = helpers.HashPassword(*user.Password); err != nil {
+			return err
+		}
+	}
+
+	if _, err = u.ReplaceOne(ctx, bson.M{"_id": oid}, user); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Delete removes user from `users` collection
+// @TODO clean all associated sessions in transaction
+func (u *User) Delete(uid string) error {
+	var (
+		oid primitive.ObjectID
+		err error
+	)
+
+	if oid, err = primitive.ObjectIDFromHex(uid); err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	if _, err = u.DeleteOne(ctx, bson.M{"_id": oid}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// MarshalJSON cleans password field on response
+// as a result, because of "omitempty", there is no "password field" in respone
 func (u *UserScheme) MarshalJSON() ([]byte, error) {
 	type tmp UserScheme
 

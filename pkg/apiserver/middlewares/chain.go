@@ -26,6 +26,7 @@ func Chain(m ...Middlewares) http.HandlerFunc {
 			}
 		}
 
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(status)
 
 		if err != nil {

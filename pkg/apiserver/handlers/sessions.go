@@ -1,24 +1,19 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/render"
-	"go.uber.org/zap"
 
 	"github.com/teal-seagull/lyre-be-v4/pkg/apiserver/models"
 	"github.com/teal-seagull/lyre-be-v4/pkg/helpers"
-	"github.com/teal-seagull/lyre-be-v4/pkg/log"
 )
 
-type sessions struct {
-	logger *zap.Logger
-}
+type sessions struct{}
 
 func sessionsHandler() *sessions {
-	return &sessions{
-		logger: log.TheLogger().With(zap.String("handler", "sessionsHandler")),
-	}
+	return &sessions{}
 }
 
 func (s *sessions) create(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) {
@@ -33,33 +28,27 @@ func (s *sessions) create(_ http.ResponseWriter, r *http.Request) (interface{}, 
 	)
 
 	if err = render.Bind(r, request); err != nil {
-		s.logger.Error("error binding input data", zap.Error(err))
-		return nil, http.StatusBadRequest, nil
+		return nil, http.StatusBadRequest, fmt.Errorf("error binding input data - %s", err)
 	}
 
 	if u, err = models.NewUser(); err != nil {
-		s.logger.Error("error initializing user model", zap.Error(err))
-		return nil, http.StatusInternalServerError, nil
+		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing user model - %s", err)
 	}
 
 	if us, err = u.FindByName(request); err != nil {
-		s.logger.Error("error finding user by", zap.String("name", request.Name), zap.String("email", request.Email), zap.Error(err))
-		return nil, http.StatusNotFound, nil
+		return nil, http.StatusNotFound, fmt.Errorf("error finding user by name '%s', email '%s' - %s", request.Name, request.Email, err)
 	}
 
-	if !helpers.ComparePasswords(*us.Password, *request.Password) {
-		s.logger.Error("error comparing password for", zap.String("user", request.Name), zap.String("email", request.Email))
-		return nil, http.StatusUnauthorized, nil
+	if !helpers.CompareHashWithPasswords(*us.Password, *request.Password) {
+		return nil, http.StatusUnauthorized, fmt.Errorf("error comparing password for user '%s', email '%s'", request.Name, request.Email)
 	}
 
 	if sm, err = models.NewSession(); err != nil {
-		s.logger.Error("error initializing session model", zap.Error(err))
-		return nil, http.StatusInternalServerError, nil
+		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing session model - %s", err)
 	}
 
 	if ss, err = sm.Create(us.ID); err != nil {
-		s.logger.Error("error creating session", zap.Error(err))
-		return nil, http.StatusInternalServerError, nil
+		return nil, http.StatusInternalServerError, fmt.Errorf("error creating session - %s", err)
 	}
 
 	return ss, http.StatusOK, nil
@@ -73,18 +62,15 @@ func (s *sessions) remove(_ http.ResponseWriter, r *http.Request) (interface{}, 
 	)
 
 	if token = r.Context().Value(helpers.TokenStringType{}).(string); token == "" {
-		s.logger.Error("error getting token from context")
-		return nil, http.StatusInternalServerError, nil
+		return nil, http.StatusInternalServerError, fmt.Errorf("error getting token from context")
 	}
 
 	if sm, err = models.NewSession(); err != nil {
-		s.logger.Error("error initializing session model", zap.Error(err))
-		return nil, http.StatusInternalServerError, nil
+		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing session model - %s", err)
 	}
 
 	if err = sm.Remove(token); err != nil {
-		s.logger.Error("error removing session token", zap.Error(err))
-		return nil, http.StatusNotFound, nil
+		return nil, http.StatusNotFound, fmt.Errorf("error removing session token - %s", err)
 	}
 
 	return nil, http.StatusNoContent, nil

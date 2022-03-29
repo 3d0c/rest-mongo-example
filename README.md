@@ -1,167 +1,43 @@
-# ACL
+Lyre-Be-V4 Documentation
+========================
 
-### Complete scheme of how does ACL work
-
-Core objects of ACL:
-
-- users
-- applications
-- permissions
-
-_Please note, that these objects are the MongoDB collection names._
-
-#### `users`
-
-Current implementation of `user` object has three mandatory fields (in terms of `Golang` structure)
-
-- Name 
-- Email
-- ACLs
-
-ACLs-field is a meta field. Which means it stores only referenced IDs in database.
-
-ACL is an array of ACL structures, which has following fields
-
-- Application : ObjectID
-- Permission  : ObjectID
-
-This is a references to corresponding collection entities.
-
-#### `applications`
-
-Is a definition of any particular application, which API we want to expose.  
-Mandatory fields:
-
-- name
-- path
-
-#### `permissions`
-
-Permission is what particular user allowed to do with particular application. There are three default permissions:
-
-- `Read-Only` Allowed API method is `GET`
-- `Read-Write` Allowed API methods are `GET`, `POST`
-- `Full Access` Allowed API methods are `GET`, `POST`, `PUT`, `DELETE`
-
-To create these permissions one can use `fixtures/mongo.default`
-
-### Example
-
-Suppose there is a logged in user, which has valid token. On each request we're getting a complete `user` model, which could be represented as a JSON like:
-
-```javascript
-{
-	"_id" : ObjectId("620527ed4a84ecd9ac78f623"),
-	"name" : "admin",
-	"email" : "root@dev.null",
-	"acl" : [
-		{
-			"application" : ObjectId("620524994a84ecd9ac78f620"),
-			"permission" : ObjectId("620524134a84ecd9ac78f61f"),
-			"app_details" : {
-				"_id" : ObjectId("620524994a84ecd9ac78f620"),
-				"name" : "Sample One",
-				"path" : "/sample"
-			},
-			"perm_details" : {
-				"_id" : ObjectId("620524134a84ecd9ac78f61f"),
-				"name" : "Full Access",
-				"description" : "Full access to Application",
-				"methods" : [
-					"GET",
-					"POST",
-					"PUT",
-					"DELETE"
-				]
-			}
-		},
-		{
-			"application" : ObjectId("620527c04a84ecd9ac78f622"),
-			"permission" : ObjectId("620524134a84ecd9ac78f61f"),
-			"app_details" : {
-				"_id" : ObjectId("620527c04a84ecd9ac78f622"),
-				"name" : "Another one",
-				"path" : "/another"
-			},
-			"perm_details" : {
-				"_id" : ObjectId("620524134a84ecd9ac78f61f"),
-				"name" : "Full Access",
-				"description" : "Full access to Application",
-				"methods" : [
-					"GET",
-				]
-			}
-		}
-	]
-}
-```
-
-At the middleware level, before we accept request in the controller, we can validate is it possible at all. Here we have two important things: Application Path `app_details.path` and permissions list for this application `perm_details.methods`.
-
-As an example application got a request like (assuming user is authorised and we've got a complete user model)
-
-__First one:__
-
-```
-GET localhost:8443/api/v1/sample/users
-                          ^^^^^^
-                      app_details.path
-```
-
-As a result it's allowed to do this method.
-
-__Second one:__
-
-```
-POST localhost:8443/api/v1/another/documents
-                          ^^^^^^
-                      app_details.path
-```
-
-As a result user will get `403 Forbidden` because there is no such method in allowed list.
-
-# Routing chain
-
-Regarding ACL implementation adding new routes should conform following rule:
-
-- `IsAuthorized` Checks whether request has a valid token
-   
-- `GetUser` Try to get complete user information
-
-- `IsPermit` Matches permissions with request
-	
-
-Example for some application:
-
-```go
-	r.Get(
-		filepath.Join(root, "/myapplication"),
-		middlewares.Chain(
-			middlewares.IsAuthorized,
-			middlewares.GetUser,
-			middlewares.IsPermit,
-			logHandler().get,
-		),
-	)
-```
-
-Example for main application, removing current session (logout):
-
-```go
-	r.Delete(
-		filepath.Join(root, "/sessions"),
-		middlewares.Chain(
-			middlewares.IsAuthorized,
-			middlewares.GetUser,
-			// Take a look, that there is no IsPermit middleware
-			sessionsHandler().remove,
-		),
-	)
-```
+## Contents
+- [API Specification](#api-specification)
+	- [Authentication](#authentication)
+		- [Login](#login)
+		- [Logout](#logout)
+		- [List sessions](#list-sessions)
+		- [Logout specific user](#logout-specific-user)
+	- [Manage Users](#manage-users)
+		- [List users](#list-users)
+		- [Show specific user](#show-specific-user)
+		- [Create user](#create-user)
+		- [Update user](#update-user)
+		- [Delete user](#delete-user)
+	- [Manage Applications](#manage-applications)
+		- [List applications](#list-applications)
+		- [Show specific application](#show-specific-application)
+		- [Create application](#create-application)
+		- [Update application](#update-application)
+		- [Delete application](#delete-application)
+	- [Manage permissions](#manage-permissions)
+		- [List permissions](#list-permission)
+		- [Show specific permission](#show-specific-permission)
+		- [Create permission](#create-permission)
+		- [Update permission](#update-permission)
+		- [Delete permission](#delete-permission)
+- [Internals](#internals)
+	- [ACL](#acl)
+	- [Routing chain](#routing-chain)
+- [Development](#development)
+	- [Of using github](#of-using-github)
+	- [Code style](#code-style)
 
 # API Specification
 
-### 1. Create a session (login)
+## Authentication
+
+### Login
 
 Getting session token, which must be provided with all others API calls as
 header `Authorization: Bearer TOKEN`
@@ -249,7 +125,7 @@ localhost:8443/v1/sessions
 < Content-Length: 0
 ```
 
-### 2. Remove the session (logout)
+### Logout
 
 Removes session token from `sessions` collection. So it's no more possible to use it. Please note, that this method doesn't check of existence of passed token in database, if token is valid it tries to remove it anyway. It's done for performance reasons, not to do extra database queries.
 
@@ -292,6 +168,667 @@ localhost:8443/v1/sessions
 < Date: Sun, 27 Mar 2022 09:54:12 GMT
 ```
 
+## Manage Users
+
+### List Users
+
+List all users. Returns an array of complete user models.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/users
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Array of complete user models
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjA2NmFlYTZkNDczZmJlMGFiZjY1ZmQiLCJleHAiOjE2NDg1NTAzMzIsImlzcyI6Imx5cmUtYmUtdjQifQ.uq9F7SEZ6ze1jVtcEvYNfJa-W7YLyF8TGEgxljx0BJk" \
+localhost:8443/v1/users
+
+# Response
+< HTTP/1.1 200 OK
+[
+	{
+		"id" : ObjectId("620527ed4a84ecd9ac78f623"),
+		"name" : "admin",
+		"email" : "root@dev.null",
+		"acl" : [
+			{
+				"application" : ObjectId("620524994a84ecd9ac78f620"),
+				"permission" : ObjectId("620524134a84ecd9ac78f61f"),
+				"app_details" : {
+					"_id" : ObjectId("620524994a84ecd9ac78f620"),
+					"name" : "User management API",
+					"path" : "/users"
+				},
+				"perm_details" : {
+					"id" : ObjectId("620524134a84ecd9ac78f61f"),
+					"name" : "Full Access",
+					"description" : "Full access to Application",
+					"methods" : [
+						"GET",
+						"POST",
+						"PUT",
+						"DELETE"
+					]
+				}
+			},
+			{
+				"application" : ObjectId("620527c04a84ecd9ac78f622"),
+				"permission" : ObjectId("620524134a84ecd9ac78f61f"),
+				"app_details" : {
+					"id" : ObjectId("620527c04a84ecd9ac78f622"),
+					"name" : "Permissions management API",
+					"path" : "/permissions"
+				},
+				"perm_details" : {
+					"id" : ObjectId("620524134a84ecd9ac78f61f"),
+					"name" : "Full Access",
+					"description" : "Full access to Application",
+					"methods" : [
+						"GET",
+						"POST",
+						"PUT",
+						"DELETE"
+					]
+				}
+			}
+		]
+	}
+]
+```
+
+### Show specific users
+
+Get user by ID. Returns single user object.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/users/{id}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single user model
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET -H \
+"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjA2NmFlYTZkNDczZmJlMGFiZjY1ZmQiLCJleHAiOjE2NDg1NTQwNjAsImlzcyI6Imx5cmUtYmUtdjQifQ.WuE5zD7o9NCk7_M74OTTVrPND_vY8d78ZYLBkyt-IlY" \
+localhost:8443/v1/users/623ec112c8c51a6a37ae839d
+
+# Response
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Tue, 29 Mar 2022 10:56:09 GMT
+< Content-Length: 1194
+<
+{
+    "id": "623ec112c8c51a6a37ae839d",
+    "user_name": "user1",
+    "email": "user1@dev.null",
+    "acl": [
+        {
+            "application": {
+                "id": "620524994a84ecd9ac78f620",
+                "name": "Sample One",
+                "path": "/sample"
+            },
+            "permissions": {
+                "id": "620524134a84ecd9ac78f61f",
+                "name": "Full Access",
+                "description": "Full access to Application",
+                "methods": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE"
+                ]
+            }
+        },
+        {
+            "application": {
+                "id": "620527c04a84ecd9ac78f622",
+                "name": "Another One",
+                "path": "/another"
+            },
+            "permissions": {
+                "id": "620524134a84ecd9ac78f61f",
+                "name": "Full Access",
+                "description": "Full access to Application",
+                "methods": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE"
+                ]
+            }
+        }
+    ]
+}
+```
+### Create user
+
+Create new user
+
+Request:
+
+```applescript
+# Endpoint
+POST /v1/users
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# User model in format as following:
+{
+    "user_name": "user1",
+    "email": "user2@dev.null",
+    "password": "plain_text_password",
+    "acl": [
+        {
+            # application id is getting from GET /applications request
+            "application": {
+                "id": "620524994a84ecd9ac78f620",
+            },
+            # permission id is getting from GET /permissions response
+            "permissions": {
+                "id": "620524134a84ecd9ac78f61f",
+            }
+        }
+    ]
+}
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Complete single user model. See GET /users/{ID} for response example
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPOST \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNjI1OTcsImlzcyI6Imx5cmUtYmUtdjQifQ.rKnp0ooe48ies83d5WhZmTCke_0Pi7p5EESbKovfXzY" \
+-H 'Content-Type: application/json' \
+-d '{
+    "user_name": "user4",
+    "email": "user4@dev.null",
+    "password": "default",
+    "acl": [{
+        "application": {
+            "id": "620524994a84ecd9ac78f620"
+        },
+        "permissions": {
+            "id": "620524134a84ecd9ac78f61f"
+        }
+    }]
+}' localhost:8443/v1/users
+
+# Response
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Tue, 29 Mar 2022 16:26:55 GMT
+< Content-Length: 654
+<
+{
+    "id": "6243334ff0326c4cf6986459",
+    "user_name": "user4",
+    "email": "user4@dev.null",
+    "acl": [
+        {
+            "application": {
+                "id": "620524994a84ecd9ac78f620",
+                "name": "Sample One",
+                "path": "/sample"
+            },
+            "permissions": {
+                "id": "620524134a84ecd9ac78f61f",
+                "name": "Full Access",
+                "description": "Full access to Application",
+                "methods": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE"
+                ]
+            }
+        }
+    ]
+}
+```
+
+### Update user
+
+Please note, that because of MongoDB specific, this request actually replaces the whole document,
+the only field could be omitted is the Password. Result is a single user object.
+
+Request:
+
+```applescript
+# Endpoint
+PUT /v1/users/{ID}
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# User model in format as following:
+{
+    "user_name": "user5555",
+    "email": "user6666@dev.null",
+    "password": "plain_text_password", # This one is optional
+    "acl": [
+        {
+            # application id is getting from GET /applications request
+            "application": {
+                "id": "620524994a84ecd9ac78f620",
+            },
+            # permission id is getting from GET /permissions response
+            "permissions": {
+                "id": "620524134a84ecd9ac78f61f",
+            }
+        }
+    ]
+}
+```
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Bare user object. Password is optional
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPUT \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+-H 'Content-Type: application/json' \
+-d '{
+    "user_name": "user6",
+    "email": "user6@dev.null",
+    "password": "default",
+    "acl": [{
+        "application": {
+            "id": "6242d43e99fd59c176c52fd3"
+        },
+        "permissions": {
+            "id": "620524134a84ecd9ac78f61f"
+        }
+    }]
+}' localhost:8443/v1/users/62436b5ab97ea7529242bad6
+
+# Response
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Tue, 29 Mar 2022 21:42:24 GMT
+< Content-Length: 670
+<
+{
+    "id": "62436b5ab97ea7529242bad6",
+    "user_name": "user6",
+    "email": "user6@dev.null",
+    "acl": [
+        {
+            "application": {
+                "id": "6242d43e99fd59c176c52fd3",
+                "name": "User management application",
+                "path": "/users"
+            },
+            "permissions": {
+                "id": "620524134a84ecd9ac78f61f",
+                "name": "Full Access",
+                "description": "Full access to Application",
+                "methods": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE"
+                ]
+            }
+        }
+    ]
+}
+```
+
+### Remove user
+Removes user from `users` collection.
+
+Request:
+
+```applescript
+# Endpoint
+DELETE /v1/users/{ID}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+204 No content
+400 Bad request
+403 Forbidden
+503 Internal server error
+```
+
+Please note, the `DELETE` method returns empty body. Only the status code.
+
+Examples:
+
+```applescript
+# Request
+curl -v -XDELETE \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+localhost:8443/v1/users/62436b5ab97ea7529242bad6
+
+# Response
+< HTTP/1.1 204 No Content
+< Content-Type: application/json
+< Date: Tue, 29 Mar 2022 22:11:51 GMT
+```
+
+
+# Internals
+## ACL
+### Complete scheme of how does ACL work
+
+Core objects of ACL:
+
+- users
+- applications
+- permissions
+
+_Please note, that these objects are the MongoDB collection names._
+
+#### `users`
+
+Current implementation of `user` object has three mandatory fields (in terms of `Golang` structure)
+
+- Name
+- Email
+- ACLs
+
+ACLs-field is a meta field. Which means it stores only referenced IDs in database.
+
+ACL is an array of ACL structures, which has two objects
+
+- Application
+- Permissions
+
+This is a references to corresponding collection entities.
+
+Bare `users` element looks like
+
+```javascript
+{
+	"_id" : ObjectId("6243334ff0326c4cf6986459"),
+	"name" : "user4",
+	"email" : "user4@dev.null",
+	"password" : "$2a$11$Tf13APpPJjy5qBGuW2o.busG76M3mTfTiaR5o4oHUIaY5rQhlrsAG",
+	"acl" : [
+		{
+			"application" : {
+				"_id" : ObjectId("620524994a84ecd9ac78f620")
+			},
+			"permissions" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f")
+			}
+		}
+	]
+}
+```
+
+#### `applications`
+
+Is a definition of any particular application, which API we want to expose.  
+Mandatory fields:
+
+- name
+- path
+
+#### `permissions`
+
+Permission is what particular user allowed to do with particular application. There are three default permissions:
+
+- `Read-Only` Allowed API method is `GET`
+- `Read-Write` Allowed API methods are `GET`, `POST`
+- `Full Access` Allowed API methods are `GET`, `POST`, `PUT`, `DELETE`
+
+To create these permissions one can use `fixtures/mongo.default`
+
+### Example
+
+Suppose there is a logged in user, which has valid token. On each request we're getting a complete `user` model, which could be represented as a JSON like:
+
+```javascript
+{
+	"_id" : ObjectId("6243308399fd59c176c52fd4"),
+	"name" : "admin",
+	"email" : "root@dev.null",
+	"password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
+	"acl" : [
+		{
+			"application" : {
+				"_id" : ObjectId("620524994a84ecd9ac78f620")
+			},
+			"permissions" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f")
+			},
+			"app_details" : {
+				"_id" : ObjectId("620524994a84ecd9ac78f620"),
+				"name" : "Sample One",
+				"path" : "/sample"
+			},
+			"perm_details" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f"),
+				"name" : "Full Access",
+				"description" : "Full access to Application",
+				"methods" : [
+					"GET",
+					"POST",
+					"PUT",
+					"DELETE"
+				]
+			}
+		},
+		{
+			"application" : {
+				"_id" : ObjectId("620527c04a84ecd9ac78f622")
+			},
+			"permissions" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f")
+			},
+			"app_details" : {
+				"_id" : ObjectId("620527c04a84ecd9ac78f622"),
+				"name" : "Another One",
+				"path" : "/another"
+			},
+			"perm_details" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f"),
+				"name" : "Full Access",
+				"description" : "Full access to Application",
+				"methods" : [
+					"GET",
+					"POST",
+					"PUT",
+					"DELETE"
+				]
+			}
+		},
+		{
+			"application" : {
+				"_id" : ObjectId("6242d43e99fd59c176c52fd3")
+			},
+			"permissions" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f")
+			},
+			"app_details" : {
+				"_id" : ObjectId("6242d43e99fd59c176c52fd3"),
+				"name" : "User management application",
+				"path" : "/users"
+			},
+			"perm_details" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f"),
+				"name" : "Full Access",
+				"description" : "Full access to Application",
+				"methods" : [
+					"GET",
+					"POST",
+					"PUT",
+					"DELETE"
+				]
+			}
+		}
+	]
+}
+```
+
+At the middleware level, before we accept request in the controller, we can validate is it possible at all. Here we have two important things: Application Path `app_details.path` and permissions list for this application `perm_details.methods`.
+
+As an example application got a request like (assuming user is authorised and we've got a complete user model)
+
+__First one:__
+
+```
+GET localhost:8443/api/v1/sample/users
+                          ^^^^^^
+                      app_details.path
+```
+
+As a result it's allowed to do this method.
+
+__Second one:__
+
+```
+POST localhost:8443/api/v1/another/documents
+                          ^^^^^^
+                      app_details.path
+```
+
+As a result user will get `403 Forbidden` because there is no such method in allowed list.
+
+## Routing chain
+
+Regarding ACL implementation adding new routes should conform following rule:
+
+- `IsAuthorized` Checks whether request has a valid token
+
+- `GetUser` Try to get complete user information
+
+- `IsPermit` Matches permissions with request
+
+
+Example for some application:
+
+```go
+	r.Get(
+		filepath.Join(root, "/myapplication"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			appHandler().get,
+		),
+	)
+```
+
+Example for main application, removing current session (logout):
+
+```go
+	r.Delete(
+		filepath.Join(root, "/sessions"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			// Take a look, that there is no IsPermit middleware
+			sessionsHandler().remove,
+		),
+	)
+```
+
+## Development
+
+- DO NOT push directly to master branch
+- `make lint` before commit
+- Create separated branch and do pull Request
+    - `git pull`
+    - `git checkout -b feature/new-one`
+    - do something
+    - `git add . && git commit -am 'My new feature'`
+    - `git push origin feature/new-one`
+    - Do a code review than merge
 
 
 # TODO
@@ -300,3 +837,4 @@ localhost:8443/v1/sessions
 - Dockerfile
 - CI/CD pipline
 - Integration (e2e) test
+- CORS support

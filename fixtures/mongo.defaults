@@ -28,3 +28,20 @@ db.permissions.insertOne(
 )
 
 // Default applications
+
+db.applications.insertOne(
+	{"name": "User management application", "path": "/users"}
+)
+
+db.users.update(
+	{"_id":  ObjectId("62066aea6d473fbe0abf65fd")},
+	{
+		"$push": {
+			"acl": {
+				"application_id": ObjectId("6242d43e99fd59c176c52fd3"),
+				"permission_id": ObjectId("620524134a84ecd9ac78f61f")
+			}
+		}
+	}
+
+)

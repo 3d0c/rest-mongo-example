@@ -12,7 +12,7 @@ func completeUserModel(match bson.M) []bson.M {
 		{
 			"$lookup": bson.M{
 				"from":         "applications",
-				"localField":   "acl.application_id",
+				"localField":   "acl.application._id",
 				"foreignField": "_id",
 				"as":           "acl.application",
 			},
@@ -20,7 +20,7 @@ func completeUserModel(match bson.M) []bson.M {
 		{
 			"$lookup": bson.M{
 				"from":         "permissions",
-				"localField":   "acl.permission_id",
+				"localField":   "acl.permissions._id",
 				"foreignField": "_id",
 				"as":           "acl.permissions",
 			},
