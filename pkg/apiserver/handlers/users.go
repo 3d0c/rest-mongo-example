@@ -29,7 +29,7 @@ func (u *users) get(_ http.ResponseWriter, r *http.Request) (interface{}, int, e
 		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing user model - %s", err)
 	}
 
-	if result, err = um.Find(); err != nil {
+	if result, err = um.FindAll(); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error getting users list - %s", err)
 	}
 
@@ -131,7 +131,7 @@ func (u *users) remove(_ http.ResponseWriter, r *http.Request) (interface{}, int
 	}
 
 	if err = um.Delete(uid); err != nil {
-		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing user model - %s", err)
+		return nil, http.StatusInternalServerError, fmt.Errorf("error deleting user model - %s", err)
 	}
 
 	return nil, http.StatusNoContent, nil

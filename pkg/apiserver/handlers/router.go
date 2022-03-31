@@ -37,7 +37,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 
 	// Users management
-	// List all users in the system.
+	// List all users in the system
 	r.Get(
 		filepath.Join(root, "/users"),
 		middlewares.Chain(
@@ -85,6 +85,59 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 			middlewares.GetUser,
 			middlewares.IsPermit,
 			usersHandler().remove,
+		),
+	)
+
+	// Applications management
+	// List all applications
+	r.Get(
+		filepath.Join(root, "/applications"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			appsHandler().get,
+		),
+	)
+	// Get specific application
+	r.Get(
+		filepath.Join(root, "/applications/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			appsHandler().getByID,
+		),
+	)
+	// Create application
+	r.Post(
+		filepath.Join(root, "/applications"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			appsHandler().create,
+		),
+	)
+	// Update applications
+	r.Put(
+		filepath.Join(root, "/applications/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			appsHandler().update,
+		),
+	)
+
+	// Remove application
+	r.Delete(
+		filepath.Join(root, "/applications/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			appsHandler().remove,
 		),
 	)
 
