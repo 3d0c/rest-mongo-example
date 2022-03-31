@@ -32,6 +32,8 @@ func (u *UserScheme) Bind(r *http.Request) error {
 		return fmt.Errorf("password is required")
 	}
 
+	u.ID = primitive.NilObjectID
+
 	return nil
 }
 
@@ -49,18 +51,18 @@ func (u *UserScheme) GetPermission(path string) *PermissionScheme {
 // User model
 type User struct {
 	*base
-	*mongo.Collection
 }
 
 // NewUser user model constructor
 func NewUser() (*User, error) {
 	return &User{
-		base:       &base{},
-		Collection: DB().Collection("users"),
+		base: &base{
+			Collection: DB().Collection("users"),
+		},
 	}, nil
 }
 
-// FindByID add $math by id
+// FindByID add $match by id
 func (u *User) FindByID(i interface{}) (*UserScheme, error) {
 	var (
 		oid primitive.ObjectID
@@ -104,8 +106,8 @@ func (u *User) FindByName(us *UserScheme) (*UserScheme, error) {
 	return us, nil
 }
 
-// Find finds all
-func (u *User) Find() ([]UserScheme, error) {
+// FindAll finds all
+func (u *User) FindAll() ([]UserScheme, error) {
 	var (
 		result []UserScheme
 		elem   UserScheme
@@ -116,7 +118,7 @@ func (u *User) Find() ([]UserScheme, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	if cursor, err = u.Aggregate(ctx, completeUserModel(bson.M{})); err != nil {
+	if cursor, err = u.Aggregate(ctx, completeUserModel(all)); err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
@@ -212,28 +214,6 @@ func (u *User) Update(uid string, user *UserScheme) error {
 	}
 
 	if _, err = u.ReplaceOne(ctx, bson.M{"_id": oid}, user); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Delete removes user from `users` collection
-// @TODO clean all associated sessions in transaction
-func (u *User) Delete(uid string) error {
-	var (
-		oid primitive.ObjectID
-		err error
-	)
-
-	if oid, err = primitive.ObjectIDFromHex(uid); err != nil {
-		return err
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	if _, err = u.DeleteOne(ctx, bson.M{"_id": oid}); err != nil {
 		return err
 	}
 

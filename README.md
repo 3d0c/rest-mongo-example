@@ -261,7 +261,7 @@ localhost:8443/v1/users
 ]
 ```
 
-### Show specific users
+### Show specific user
 
 Get user by ID. Returns single user object.
 
@@ -599,6 +599,280 @@ localhost:8443/v1/users/62436b5ab97ea7529242bad6
 < Date: Tue, 29 Mar 2022 22:11:51 GMT
 ```
 
+## Manage Applications
+
+### List Applications
+
+List all applications. Returns an array of applications models.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/applications
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+403 Forbidden
+503 Internal server error
+
+# Body
+Array of application models
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjA2NmFlYTZkNDczZmJlMGFiZjY1ZmQiLCJleHAiOjE2NDg1NTAzMzIsImlzcyI6Imx5cmUtYmUtdjQifQ.uq9F7SEZ6ze1jVtcEvYNfJa-W7YLyF8TGEgxljx0BJk" \
+localhost:8443/v1/applications
+
+# Response
+< Content-Type: application/json
+< Date: Thu, 31 Mar 2022 12:11:58 GMT
+< Content-Length: 483
+<
+[
+    {
+        "id": "620524994a84ecd9ac78f620",
+        "name": "Sample One",
+        "path": "/sample"
+    },
+    {
+        "id": "620527c04a84ecd9ac78f622",
+        "name": "Another One",
+        "path": "/another"
+    },
+    {
+        "id": "6242d43e99fd59c176c52fd3",
+        "name": "User management application",
+        "path": "/users"
+    },
+    {
+        "id": "6245984799fd59c176c52fd5",
+        "name": "Applications management",
+        "path": "/applications"
+    }
+]
+```
+
+### Show specific application
+
+Get application by ID. Returns single application object.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/applications/{id}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single application model
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+localhost:8443/v1/applications/6245984799fd59c176c52fd5
+
+# Response
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Thu, 31 Mar 2022 13:14:36 GMT
+< Content-Length: 108
+<
+{
+    "id": "6245984799fd59c176c52fd5",
+    "name": "Applications management",
+    "path": "/applications"
+}
+```
+
+### Create application
+
+Create new application. Path should correspond routing path. It's going to be matched on request. See provisioning of how default applications (like /users) are created and [Routing Chain](#routing-chain) for details.  
+
+Please note. Path MUST start with `/` symbol.
+
+Request:
+
+```applescript
+# Endpoint
+POST /v1/applications
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Application model in format as following:
+{
+    "name": "Plant Logger",
+    "path": "/plant_logger",
+}
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPOST \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+-H "Content-Type: application/json" \
+-d '{"name": "Plant Logger", "path": "/pant_logger"}' \
+localhost:8443/v1/applications
+
+# Response
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Thu, 31 Mar 2022 20:03:24 GMT
+< Content-Length: 95
+<
+{
+    "id": "6246090c5f6ad1232cc8fb7a",
+    "name": "Plant Logger",
+    "path": "/pant_logger"
+}
+```
+
+### Update application
+
+Please note, that because of MongoDB specific, this request actually replaces the whole document.  
+Also, if you change an application path, do not forget to update the [Routing Chain](#routing-chain). Result is a single application object.  
+
+This is the Update - so, all references to this object will be preserved. 
+
+Request:
+
+```applescript
+# Endpoint
+PUT /v1/applications/{ID}
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Application object in format as following:
+{
+	"name": "Another Application",
+	"path": "/another_one"
+}
+```
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Application object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPUT \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+-H "Content-Type: application/json" -d '{"name":"Plant Logger2","path":"pant_logger"}'  \
+localhost:8443/v1/applications/6246090c5f6ad1232cc8fb7a
+
+# Response
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Thu, 31 Mar 2022 21:31:01 GMT
+< Content-Length: 96
+<
+{
+    "id": "6246090c5f6ad1232cc8fb7a",
+    "name": "Plant Logger2",
+    "path": "pant_logger"
+}
+```
+
+### Remove application
+Removes application from `applications` collection.  
+
+@TODO and @NOTE:  
+_after deletion references to the removed application still exist in `users` collection, but because it can't be resolved, this application is no longer available. Todo - cascading remove references from `users` collections_ inside transaction.
+
+Request:
+
+```applescript
+# Endpoint
+DELETE /v1/applications/{ID}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+204 No content
+400 Bad request
+403 Forbidden
+503 Internal server error
+```
+
+Please note, the `DELETE` method returns empty body. Only the status code.
+
+Examples:
+
+```applescript
+# Request
+curl -v -XDELETE \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+-H "Content-Type: application/json" \
+localhost:8443/v1/applications/6246090c5f6ad1232cc8fb7a
+
+# Response
+< HTTP/1.1 204 No Content
+< Content-Type: application/json
+< Date: Thu, 31 Mar 2022 21:53:43 GMT
+```
 
 # Internals
 ## ACL
@@ -835,6 +1109,12 @@ Example for main application, removing current session (logout):
 
 - Database initialisation script/app
 - Dockerfile
-- CI/CD pipline
+- CI/CD pipeline
 - Integration (e2e) test
 - CORS support
+
+TODO @3d0c
+
+- rename *m to m, *id to id(string) [unify] // @refactoring
+- codegen?
+- human readable errors // @refactoring [protocol]
