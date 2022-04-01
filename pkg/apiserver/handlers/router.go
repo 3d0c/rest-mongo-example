@@ -129,7 +129,6 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 			appsHandler().update,
 		),
 	)
-
 	// Remove application
 	r.Delete(
 		filepath.Join(root, "/applications/{ID}"),
@@ -138,6 +137,58 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 			middlewares.GetUser,
 			middlewares.IsPermit,
 			appsHandler().remove,
+		),
+	)
+
+	// Permissions management
+	// List all permissions
+	r.Get(
+		filepath.Join(root, "/permissions"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			permHandler().get,
+		),
+	)
+	// Get specific application
+	r.Get(
+		filepath.Join(root, "/permissions/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			permHandler().getByID,
+		),
+	)
+	// Create permission
+	r.Post(
+		filepath.Join(root, "/permissions"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			permHandler().create,
+		),
+	)
+	// Update permission
+	r.Put(
+		filepath.Join(root, "/permissions/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			permHandler().update,
+		),
+	)
+	// Remove application
+	r.Delete(
+		filepath.Join(root, "/permissions/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			permHandler().remove,
 		),
 	)
 

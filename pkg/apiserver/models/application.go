@@ -153,24 +153,3 @@ func (a *Application) Create(app *ApplicationScheme) (string, error) {
 
 	return oid.Hex(), nil
 }
-
-// Update updates specific application, pretty the same as Create method
-func (a *Application) Update(id string, app *ApplicationScheme) error {
-	var (
-		oid primitive.ObjectID
-		err error
-	)
-
-	if oid, err = primitive.ObjectIDFromHex(id); err != nil {
-		return err
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	if _, err = a.ReplaceOne(ctx, bson.M{"_id": oid}, app); err != nil {
-		return err
-	}
-
-	return nil
-}

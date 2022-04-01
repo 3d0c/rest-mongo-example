@@ -193,33 +193,6 @@ func (u *User) Create(user *UserScheme) (string, error) {
 	return oid.Hex(), nil
 }
 
-// Update updates specific user, pretty the same as Create method
-func (u *User) Update(uid string, user *UserScheme) error {
-	var (
-		oid primitive.ObjectID
-		err error
-	)
-
-	if oid, err = primitive.ObjectIDFromHex(uid); err != nil {
-		return err
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	if user.Password != nil {
-		if *user.Password, err = helpers.HashPassword(*user.Password); err != nil {
-			return err
-		}
-	}
-
-	if _, err = u.ReplaceOne(ctx, bson.M{"_id": oid}, user); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // MarshalJSON cleans password field on response
 // as a result, because of "omitempty", there is no "password field" in respone
 func (u *UserScheme) MarshalJSON() ([]byte, error) {

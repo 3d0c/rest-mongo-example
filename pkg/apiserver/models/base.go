@@ -37,3 +37,24 @@ func (b *base) Delete(id string) error {
 
 	return nil
 }
+
+// Update generic update method
+func (b *base) Update(id string, i interface{}) error {
+	var (
+		oid primitive.ObjectID
+		err error
+	)
+
+	if oid, err = primitive.ObjectIDFromHex(id); err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	if _, err = b.ReplaceOne(ctx, bson.M{"_id": oid}, i); err != nil {
+		return err
+	}
+
+	return nil
+}
