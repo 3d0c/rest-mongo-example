@@ -832,7 +832,7 @@ localhost:8443/v1/applications/6246090c5f6ad1232cc8fb7a
 Removes application from `applications` collection.  
 
 @TODO and @NOTE:  
-_after deletion references to the removed application still exist in `users` collection, but because it can't be resolved, this application is no longer available. Todo - cascading remove references from `users` collections_ inside transaction.
+_after deletion, references to the removed application still exist in `users` collection, but because it can't be resolved, this application is no longer available. Todo - cascading remove references from `users` collections inside transaction_.
 
 Request:
 
@@ -873,6 +873,316 @@ localhost:8443/v1/applications/6246090c5f6ad1232cc8fb7a
 < Content-Type: application/json
 < Date: Thu, 31 Mar 2022 21:53:43 GMT
 ```
+
+## Manage Permissions
+
+### List Permissions
+
+List all permissions. Returns an array of permissions objects.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/permissions
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+403 Forbidden
+503 Internal server error
+
+# Body
+Array of permissions objects
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+localhost:8443/v1/permissions
+
+# Response
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Fri, 01 Apr 2022 11:45:39 GMT
+< Content-Length: 660
+<
+[
+    {
+        "id": "620524134a84ecd9ac78f61d",
+        "name": "Read-Only",
+        "description": "Read only access to Application",
+        "methods": [
+            "GET"
+        ]
+    },
+    {
+        "id": "620524134a84ecd9ac78f61e",
+        "name": "Read-Write",
+        "description": "Read and Create access to Application",
+        "methods": [
+            "GET",
+            "POST"
+        ]
+    },
+    {
+        "id": "620524134a84ecd9ac78f61f",
+        "name": "Full Access",
+        "description": "Full access to Application",
+        "methods": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE"
+        ]
+    }
+]
+
+```
+
+### Show specific permission
+
+Get application by ID. Returns single application object.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/permissions/{id}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single permission object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+localhost:8443/v1/permissions/620524134a84ecd9ac78f61f
+
+# Response
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Fri, 01 Apr 2022 11:48:31 GMT
+< Content-Length: 203
+<
+{
+    "id": "620524134a84ecd9ac78f61f",
+    "name": "Full Access",
+    "description": "Full access to Application",
+    "methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+    ]
+}
+```
+
+### Create permission
+
+Create new permission.
+
+Request:
+
+```applescript
+# Endpoint
+POST /v1/permissions
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Permission object in format as following:
+# Allowed methods: `GET`, `POST`, `PUT`, `DELETE`
+{
+    "name": "Plant Logger",
+    "methods": [],
+}
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single permission object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPOST \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+-H "Content-Type: application/json" \
+-d '{"name":"test1", "methods":["GET"]}' \
+localhost:8443/v1/permissions
+
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Fri, 01 Apr 2022 12:41:42 GMT
+< Content-Length: 122
+<
+{
+    "id": "6246f30687ead2746d1340a2",
+    "name": "test1",
+    "description": "",
+    "methods": [
+        "GET"
+    ]
+}
+```
+
+### Update permission
+
+Please note, that because of MongoDB specific, this request actually replaces the whole document.  
+
+This is the Update - so, all references to this object will be preserved. 
+
+Request:
+
+```applescript
+# Endpoint
+PUT /v1/permissions/{ID}
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Permission object in format as following:
+# Allowed methods: `GET`, `POST`, `PUT`, `DELETE`
+{
+    "name": "Plant Logger",
+    "methods": [],
+}
+```
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Permission object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPUT \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+-H "Content-Type: application/json" \
+-d '{"name":"test1", "methods":["GET","POST"]}' \
+localhost:8443/v1/permissions/6246f30687ead2746d1340a2
+
+# Response
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Date: Fri, 01 Apr 2022 12:54:39 GMT
+< Content-Length: 138
+<
+{
+    "id": "6246f30687ead2746d1340a2",
+    "name": "test1",
+    "description": "",
+    "methods": [
+        "GET",
+        "POST"
+    ]
+}
+```
+
+### Remove permission
+Removes permission document from `permissions` collection.  
+
+@TODO and @NOTE:  
+_after deletion, references to the removed permission still exist in `users` collection, but because it can't be resolved, this permission is no longer available. Todo - cascading remove references from `users` collections inside transaction_.
+
+Request:
+
+```applescript
+# Endpoint
+DELETE /v1/permissions/{ID}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+204 No content
+400 Bad request
+403 Forbidden
+503 Internal server error
+```
+
+Please note, the `DELETE` method returns empty body. Only the status code.
+
+Examples:
+
+```applescript
+# Request
+curl -v -XDELETE \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+localhost:8443/v1/permissions/6246f30687ead2746d1340a2
+
+# Response
+< HTTP/1.1 204 No Content
+< Content-Type: application/json
+< Date: Fri, 01 Apr 2022 13:02:58 GMT
+```
+
 
 # Internals
 ## ACL
