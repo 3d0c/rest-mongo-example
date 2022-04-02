@@ -59,7 +59,7 @@ func InitLogger(cfg config.Logger) {
 
 	logger, err := zapCfg.Build()
 	if err != nil {
-		TheLogger().Fatal("error initializing logger, going to use default", zap.Error(err))
+		TheLogger().Error("error initializing logger, going to use default", zap.Error(err))
 	}
 
 	instance = logger

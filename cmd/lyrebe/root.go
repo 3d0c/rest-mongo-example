@@ -17,7 +17,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "lyrebe",
+	Use:   "lyre-be",
 	Short: "Lyre-be API Server",
 }
 
@@ -46,6 +46,11 @@ func initConfig() {
 
 	if err := viper.Unmarshal(config.TheConfig()); err != nil {
 		panic(fmt.Sprintf("Failed to init config: %s", err))
+	}
+
+	// Override config database URI if it's provided by ENV
+	if mongoURI := os.Getenv("MONGO_URI"); mongoURI != "" {
+		config.TheConfig().Database.URI = mongoURI
 	}
 
 	checkRequired(

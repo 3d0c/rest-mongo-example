@@ -53,7 +53,7 @@ func connectDatabase() (*mongo.Client, error) {
 	defer cancel()
 
 	if client, err = mongo.Connect(ctx, opt); err != nil {
-		return nil, fmt.Errorf("error connection to database - %s", err)
+		return nil, fmt.Errorf("error connection to database '%s' - %s", config.TheConfig().Database.URI, err)
 	}
 
 	return client, nil

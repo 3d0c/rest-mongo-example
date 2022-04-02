@@ -11,7 +11,7 @@ FULL_VERSION     := ${PRODUCT_VERSION}-${COMMIT}
 DATE			 := $(shell date +%FT%T%z)
 
 ### go vars
-GO_ENV_VARS			= GO111MODULE=on CGO_ENABLED=0 GOPROXY=https://proxy.golang.org,direct
+GO_ENV_VARS			= GOSUMDB=off GO111MODULE=on CGO_ENABLED=0
 BUILD_FLAGS	= -ldflags "-w -s -X github.com/teal-seagull/lyre-be-v4/cmd/lyre-be.version=${FULL_VERSION} -X github.com/teal-seagull/lyre-be-v4/cmd/lyre-be.date=${DATE}"
 
 ### variables for testing
