@@ -2,6 +2,8 @@ Lyre-Be-V4 Documentation
 ========================
 
 ## Contents
+- [Build and Run](#build-and-run)
+	- [Development environment](#development-environment)
 - [API Specification](#api-specification)
 	- [Authentication](#authentication)
 		- [Login](#login)
@@ -32,6 +34,28 @@ Lyre-Be-V4 Documentation
 - [Development](#development)
 	- [Of using github](#of-using-github)
 	- [Code style](#code-style)
+
+# Build and Run
+
+## Development environment
+
+Prerequisites for this step is to have Docker installed on the system (Docker Desktop for OSX and Windows).
+
+Run a single command inside project root directory:
+
+```sh
+docker-compose --verbose up -d
+```
+
+Check that it works:
+
+```sh
+curl -v -XPOST \
+-H "Content-Type: application/json" \
+-d '{"user_name":"admin","password":"default_password"}' \
+localhost:8443/v1/sessions
+```
+This request should return `200 OK` and new token.
 
 # API Specification
 

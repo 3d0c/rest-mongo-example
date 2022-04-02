@@ -1,3 +1,5 @@
+// DO NOT REMOVE. USED FOR TESTS OBLY
+//
 // Default permissions
 
 db.permissions.drop()
@@ -44,4 +46,112 @@ db.users.update(
 		}
 	}
 
+)
+
+//
+
+> db.applications.find().pretty()
+{
+	"_id" : ObjectId("620524994a84ecd9ac78f620"),
+	"name" : "Sample One",
+	"path" : "/sample"
+}
+{
+	"_id" : ObjectId("620527c04a84ecd9ac78f622"),
+	"name" : "Another One",
+	"path" : "/another"
+}
+{
+	"_id" : ObjectId("6242d43e99fd59c176c52fd3"),
+	"name" : "User management application",
+	"path" : "/users"
+}
+{
+	"_id" : ObjectId("6245984799fd59c176c52fd5"),
+	"name" : "Applications management",
+	"path" : "/applications"
+}
+> db.users.find({"name": "admin"}).pretty()
+{
+	"_id" : ObjectId("6243308399fd59c176c52fd4"),
+	"name" : "admin",
+	"email" : "root@dev.null",
+	"password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
+	"acl" : [
+		{
+			"application" : {
+				"_id" : ObjectId("620524994a84ecd9ac78f620")
+			},
+			"permissions" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f")
+			}
+		},
+		{
+			"application" : {
+				"_id" : ObjectId("620527c04a84ecd9ac78f622")
+			},
+			"permissions" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f")
+			}
+		},
+		{
+			"application" : {
+				"_id" : ObjectId("6242d43e99fd59c176c52fd3")
+			},
+			"permissions" : {
+				"_id" : ObjectId("620524134a84ecd9ac78f61f")
+			}
+		}
+	]
+}
+
+db.users.replaceOne(
+	{"name":"admin"},
+	{
+		"name" : "admin",
+		"email" : "root@dev.null",
+		"password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
+		"acl" : [
+			{
+				"application" : {
+					"_id" : ObjectId("620524994a84ecd9ac78f620")
+				},
+				"permissions" : {
+					"_id" : ObjectId("620524134a84ecd9ac78f61f")
+				}
+			},
+			{
+				"application" : {
+					"_id" : ObjectId("620527c04a84ecd9ac78f622")
+				},
+				"permissions" : {
+					"_id" : ObjectId("620524134a84ecd9ac78f61f")
+				}
+			},
+			{
+				"application" : {
+					"_id" : ObjectId("6242d43e99fd59c176c52fd3")
+				},
+				"permissions" : {
+					"_id" : ObjectId("620524134a84ecd9ac78f61f")
+				}
+			},
+			{
+				"application" : {
+					"_id" : ObjectId("6245984799fd59c176c52fd5")
+				},
+				"permissions" : {
+					"_id" : ObjectId("620524134a84ecd9ac78f61f")
+				}
+			},
+			{
+				"application" : {
+					"_id" : ObjectId("6246d923ad35f14740a5fa79")
+				},
+				"permissions" : {
+					"_id" : ObjectId("620524134a84ecd9ac78f61f")
+				}				
+			}
+		]
+	}
 )

@@ -34,7 +34,7 @@ var runCmd = &cobra.Command{
 		initConfig()
 
 		log.InitLogger(config.TheConfig().Logger)
-		log.TheLogger().Debug("lyrebe component",
+		log.TheLogger().Debug("lyre-be component",
 			zap.String("config", fmt.Sprintf("%#v", config.TheConfig())))
 
 		runProcesses()
