@@ -61,6 +61,19 @@ db.applications.insertMany([
     },
 ]);
 
+db.createCollection('roles');
+db.roles.insertMany([
+    {
+        "_id" : ObjectId("6242d43e99fd59c176c52fd4"),
+        "name" : "System management",
+        "apps": [
+            ObjectId("6242d43e99fd59c176c52fd3"),
+            ObjectId("6245984799fd59c176c52fd5"),
+            ObjectId("6246d923ad35f14740a5fa79")
+        ]
+    }
+]);
+
 db.createCollection('users');
 db.users.insertMany([
     {
@@ -93,6 +106,11 @@ db.users.insertMany([
                     "_id" : ObjectId("620524134a84ecd9ac78f61f")
                 }
             }
+        ],
+        "roles": [
+            ObjectId("6242d43e99fd59c176c52fd4") 
         ]
     }
 ])
+db.users.createIndex({ "name": 1 }, { unique: true });
+db.users.createIndex({ "email": 1 }, { unique: true });

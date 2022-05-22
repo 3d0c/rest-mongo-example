@@ -23,16 +23,31 @@ type UserScheme struct {
 	Email    string             `bson:"email" json:"email"`
 	Password *string            `bson:"password" json:"password,omitempty"`
 	ACL      []ACLScheme        `bson:"acl" json:"acl"`
+	Roles    []string           `bson:"roles" json:"roles"`
+	Avatar   string             `bson:"avatar" json:"avatar"`
 }
 
 // Bind interface
 // TODO Add validation package
 func (u *UserScheme) Bind(r *http.Request) error {
+	var (
+		fileName string
+		err      error
+	)
+
+	u.ID = primitive.NilObjectID
+
 	if u.Password == nil {
 		return fmt.Errorf("password is required")
 	}
 
-	u.ID = primitive.NilObjectID
+	if u.Avatar != "" {
+		if fileName, err = helpers.ParseAndSaveImage(u.Avatar); err != nil {
+			return err
+		}
+
+		u.Avatar = fileName
+	}
 
 	return nil
 }
@@ -107,18 +122,27 @@ func (u *User) FindByName(us *UserScheme) (*UserScheme, error) {
 }
 
 // FindAll finds all
-func (u *User) FindAll() ([]UserScheme, error) {
+func (u *User) FindAll(roleID string) ([]UserScheme, error) {
 	var (
 		result []UserScheme
 		elem   UserScheme
 		cursor *mongo.Cursor
+		match  bson.M = all
+		oid    primitive.ObjectID
 		err    error
 	)
+
+	if roleID != "" {
+		if oid, err = primitive.ObjectIDFromHex(roleID); err != nil {
+			return nil, err
+		}
+		match = bson.M{"roles": oid}
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	if cursor, err = u.Aggregate(ctx, completeUserModel(all)); err != nil {
+	if cursor, err = u.Aggregate(ctx, completeUserModel(match)); err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)

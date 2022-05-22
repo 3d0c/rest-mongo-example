@@ -29,7 +29,7 @@ func (u *users) get(_ http.ResponseWriter, r *http.Request) (interface{}, int, e
 		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing user model - %s", err)
 	}
 
-	if result, err = um.FindAll(); err != nil {
+	if result, err = um.FindAll(chi.URLParam(r, "role")); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error getting users list - %s", err)
 	}
 

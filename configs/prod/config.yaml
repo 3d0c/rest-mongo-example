@@ -4,6 +4,7 @@ server:
   apiVersion: v1
   address: ":443"
   JWTSecret: "BXokUG7Qwhl8795D4Ry+jIYcrCcrx"
+  static: "./tmp"
 
 logger:
   level: info

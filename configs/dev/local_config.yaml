@@ -3,6 +3,7 @@
 server:
   apiVersion: v1
   address: ":8443"
+  static: "./tmp"
 
 logger:
   level: debug

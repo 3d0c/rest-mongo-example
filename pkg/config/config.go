@@ -14,6 +14,7 @@ type Server struct {
 	APIVersion string
 	Address    string
 	JWTSecret  string
+	Static     string
 }
 
 // Logger config section
