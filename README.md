@@ -204,6 +204,9 @@ Request:
 # Endpoint
 GET /v1/users
 
+# Available parameters
+?role=roleID
+
 # Expected authentication header
 Authorization: Bearer TOKEN
 
@@ -239,6 +242,7 @@ localhost:8443/v1/users
 		"id" : ObjectId("620527ed4a84ecd9ac78f623"),
 		"name" : "admin",
 		"email" : "root@dev.null",
+        "avatar": "path/uuid.ext"
 		"acl" : [
 			{
 				"application" : ObjectId("620524994a84ecd9ac78f620"),
@@ -281,8 +285,20 @@ localhost:8443/v1/users
 				}
 			}
 		]
+		"roles": [
+            "6242d43e99fd59c176c52fd4"
+        ],
 	}
 ]
+```
+
+To get a list of users with specific role use:
+
+```
+curl -v -XGET \
+-H "Authorization: Bearer \
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTU4MTg4ODYsImlzcyI6Imx5cmUtYmUtdjQifQ.2cLfysvWqtKftvshxyGtTPf2l_z-SmGDKHtahXfDBYc" \
+"localhost:8443/v1/users?role=6242d43e99fd59c176c52fd4"
 ```
 
 ### Show specific user
@@ -333,6 +349,7 @@ localhost:8443/v1/users/623ec112c8c51a6a37ae839d
     "id": "623ec112c8c51a6a37ae839d",
     "user_name": "user1",
     "email": "user1@dev.null",
+    "avatar": "path/uuid.ext"
     "acl": [
         {
             "application": {
@@ -370,7 +387,10 @@ localhost:8443/v1/users/623ec112c8c51a6a37ae839d
                 ]
             }
         }
-    ]
+    ],
+    "roles": [
+        "6242d43e99fd59c176c52fd4"
+    ],
 }
 ```
 ### Create user
@@ -395,6 +415,7 @@ Authorization: Bearer TOKEN
     "user_name": "user1",
     "email": "user2@dev.null",
     "password": "plain_text_password",
+    "avatar": "Image data URI scheme with base64 encoded data output"
     "acl": [
         {
             # application id is getting from GET /applications request
@@ -406,7 +427,10 @@ Authorization: Bearer TOKEN
                 "id": "620524134a84ecd9ac78f61f",
             }
         }
-    ]
+    ],
+    "roles": [
+        "6242d43e99fd59c176c52fd4"
+    ],    
 }
 ```
 
@@ -434,6 +458,7 @@ curl -v -XPOST \
     "user_name": "user4",
     "email": "user4@dev.null",
     "password": "default",
+    // "avatar": not provided for example because of length
     "acl": [{
         "application": {
             "id": "620524994a84ecd9ac78f620"
@@ -441,7 +466,10 @@ curl -v -XPOST \
         "permissions": {
             "id": "620524134a84ecd9ac78f61f"
         }
-    }]
+    }],
+    "roles": [
+        "6242d43e99fd59c176c52fd4"
+    ]    
 }' localhost:8443/v1/users
 
 # Response
@@ -454,6 +482,7 @@ curl -v -XPOST \
     "id": "6243334ff0326c4cf6986459",
     "user_name": "user4",
     "email": "user4@dev.null",
+    "avatar": "path/uuid.ext"
     "acl": [
         {
             "application": {
@@ -473,7 +502,10 @@ curl -v -XPOST \
                 ]
             }
         }
-    ]
+    ],
+    "roles": [
+        "6242d43e99fd59c176c52fd4"
+    ],    
 }
 ```
 
@@ -500,6 +532,7 @@ Authorization: Bearer TOKEN
     "user_name": "user5555",
     "email": "user6666@dev.null",
     "password": "plain_text_password", # This one is optional
+    "avatar": "Image data URI scheme with base64 encoded data output"
     "acl": [
         {
             # application id is getting from GET /applications request
@@ -511,7 +544,10 @@ Authorization: Bearer TOKEN
                 "id": "620524134a84ecd9ac78f61f",
             }
         }
-    ]
+    ],
+    "roles": [
+        "6242d43e99fd59c176c52fd4"
+    ],    
 }
 ```
 Response:
@@ -538,6 +574,7 @@ curl -v -XPUT \
     "user_name": "user6",
     "email": "user6@dev.null",
     "password": "default",
+    "avatar": "path/uuid.ext"
     "acl": [{
         "application": {
             "id": "6242d43e99fd59c176c52fd3"
@@ -545,7 +582,10 @@ curl -v -XPUT \
         "permissions": {
             "id": "620524134a84ecd9ac78f61f"
         }
-    }]
+    }],
+    "roles": [
+        "6242d43e99fd59c176c52fd4"
+    ],    
 }' localhost:8443/v1/users/62436b5ab97ea7529242bad6
 
 # Response
@@ -577,7 +617,10 @@ curl -v -XPUT \
                 ]
             }
         }
-    ]
+    ],
+    "roles": [
+        "6242d43e99fd59c176c52fd4"
+    ],    
 }
 ```
 
