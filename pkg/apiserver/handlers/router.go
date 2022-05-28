@@ -17,6 +17,9 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 
 	r := chi.NewRouter()
 
+	// Preflight OPTIONS, needed for CORS
+	r.Options("/*", middlewares.Chain(nilHandler))
+
 	// Authentication
 	// Login. Available for all
 	r.Post(

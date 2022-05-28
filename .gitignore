@@ -1,5 +1,6 @@
 # golang idea files
 .idea
+.vscode
 
 # libries and build artifacts
 build
