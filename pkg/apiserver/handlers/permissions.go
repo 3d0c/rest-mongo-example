@@ -123,7 +123,7 @@ func (p *permissions) remove(_ http.ResponseWriter, r *http.Request) (interface{
 	)
 
 	if id == "" {
-		return nil, http.StatusBadRequest, fmt.Errorf("error getting application id")
+		return nil, http.StatusBadRequest, fmt.Errorf("error getting permission id")
 	}
 
 	if m, err = models.NewPermission(); err != nil {

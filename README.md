@@ -3,37 +3,43 @@ Lyre-Be-V4 Documentation
 
 ## Contents
 - [Build and Run](#build-and-run)
-	- [Development environment](#development-environment)
+    - [Development environment](#development-environment)
 - [API Specification](#api-specification)
-	- [Authentication](#authentication)
-		- [Login](#login)
-		- [Logout](#logout)
-		- [List sessions](#list-sessions)
-		- [Logout specific user](#logout-specific-user)
-	- [Manage Users](#manage-users)
-		- [List users](#list-users)
-		- [Show specific user](#show-specific-user)
-		- [Create user](#create-user)
-		- [Update user](#update-user)
-		- [Delete user](#delete-user)
-	- [Manage Applications](#manage-applications)
-		- [List applications](#list-applications)
-		- [Show specific application](#show-specific-application)
-		- [Create application](#create-application)
-		- [Update application](#update-application)
-		- [Delete application](#delete-application)
-	- [Manage permissions](#manage-permissions)
-		- [List permissions](#list-permission)
-		- [Show specific permission](#show-specific-permission)
-		- [Create permission](#create-permission)
-		- [Update permission](#update-permission)
-		- [Delete permission](#delete-permission)
+    - [Authentication](#authentication)
+        - [Login](#login)
+        - [Logout](#logout)
+        - [List sessions](#list-sessions)
+        - [Logout specific user](#logout-specific-user)
+    - [Manage Users](#manage-users)
+        - [List users](#list-users)
+        - [Show specific user](#show-specific-user)
+        - [Create user](#create-user)
+        - [Update user](#update-user)
+        - [Delete user](#delete-user)
+    - [Manage Applications](#manage-applications)
+        - [List applications](#list-applications)
+        - [Show specific application](#show-specific-application)
+        - [Create application](#create-application)
+        - [Update application](#update-application)
+        - [Delete application](#delete-application)
+    - [Manage permissions](#manage-permissions)
+        - [List permissions](#list-permission)
+        - [Show specific permission](#show-specific-permission)
+        - [Create permission](#create-permission)
+        - [Update permission](#update-permission)
+        - [Delete permission](#delete-permission)
+    - [Manage roles](#manage-roles)
+        - [List roles](#list-roles)
+        - [Show specific role](#show-specific-role)
+        - [Create role](#create-role)
+        - [Update role](#update-role)
+        - [Delete role](#delete-role)
 - [Internals](#internals)
-	- [ACL](#acl)
-	- [Routing chain](#routing-chain)
+    - [ACL](#acl)
+    - [Routing chain](#routing-chain)
 - [Development](#development)
-	- [Of using github](#of-using-github)
-	- [Code style](#code-style)
+    - [Of using github](#of-using-github)
+    - [Code style](#code-style)
 
 # Build and Run
 
@@ -77,13 +83,13 @@ Content-Type: "application/json"
 
 # Payload
 {
-	"user_name": (string)
-	"password":  (string)
+    "user_name": (string)
+    "password":  (string)
 }
 # or use email instead of user_name
 {
-	"email":    (string)
-	"password": (string)
+    "email":    (string)
+    "password": (string)
 }
 ```
 
@@ -101,7 +107,7 @@ Content-Type: "application/json"
 
 # Body
 {
-	"token": (string)
+    "token": (string)
 }
 ```
 
@@ -238,57 +244,57 @@ localhost:8443/v1/users
 # Response
 < HTTP/1.1 200 OK
 [
-	{
-		"id" : ObjectId("620527ed4a84ecd9ac78f623"),
-		"name" : "admin",
-		"email" : "root@dev.null",
+    {
+        "id" : ObjectId("620527ed4a84ecd9ac78f623"),
+        "name" : "admin",
+        "email" : "root@dev.null",
         "avatar": "path/uuid.ext"
-		"acl" : [
-			{
-				"application" : ObjectId("620524994a84ecd9ac78f620"),
-				"permission" : ObjectId("620524134a84ecd9ac78f61f"),
-				"app_details" : {
-					"_id" : ObjectId("620524994a84ecd9ac78f620"),
-					"name" : "User management API",
-					"path" : "/users"
-				},
-				"perm_details" : {
-					"id" : ObjectId("620524134a84ecd9ac78f61f"),
-					"name" : "Full Access",
-					"description" : "Full access to Application",
-					"methods" : [
-						"GET",
-						"POST",
-						"PUT",
-						"DELETE"
-					]
-				}
-			},
-			{
-				"application" : ObjectId("620527c04a84ecd9ac78f622"),
-				"permission" : ObjectId("620524134a84ecd9ac78f61f"),
-				"app_details" : {
-					"id" : ObjectId("620527c04a84ecd9ac78f622"),
-					"name" : "Permissions management API",
-					"path" : "/permissions"
-				},
-				"perm_details" : {
-					"id" : ObjectId("620524134a84ecd9ac78f61f"),
-					"name" : "Full Access",
-					"description" : "Full access to Application",
-					"methods" : [
-						"GET",
-						"POST",
-						"PUT",
-						"DELETE"
-					]
-				}
-			}
-		]
-		"roles": [
+        "acl" : [
+            {
+                "application" : ObjectId("620524994a84ecd9ac78f620"),
+                "permission" : ObjectId("620524134a84ecd9ac78f61f"),
+                "app_details" : {
+                    "_id" : ObjectId("620524994a84ecd9ac78f620"),
+                    "name" : "User management API",
+                    "path" : "/users"
+                },
+                "perm_details" : {
+                    "id" : ObjectId("620524134a84ecd9ac78f61f"),
+                    "name" : "Full Access",
+                    "description" : "Full access to Application",
+                    "methods" : [
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE"
+                    ]
+                }
+            },
+            {
+                "application" : ObjectId("620527c04a84ecd9ac78f622"),
+                "permission" : ObjectId("620524134a84ecd9ac78f61f"),
+                "app_details" : {
+                    "id" : ObjectId("620527c04a84ecd9ac78f622"),
+                    "name" : "Permissions management API",
+                    "path" : "/permissions"
+                },
+                "perm_details" : {
+                    "id" : ObjectId("620524134a84ecd9ac78f61f"),
+                    "name" : "Full Access",
+                    "description" : "Full access to Application",
+                    "methods" : [
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE"
+                    ]
+                }
+            }
+        ]
+        "roles": [
             "6242d43e99fd59c176c52fd4"
         ],
-	}
+    }
 ]
 ```
 
@@ -856,8 +862,8 @@ Authorization: Bearer TOKEN
 # Payload
 # Application object in format as following:
 {
-	"name": "Another Application",
-	"path": "/another_one"
+    "name": "Another Application",
+    "path": "/another_one"
 }
 ```
 Response:
@@ -1021,7 +1027,7 @@ localhost:8443/v1/permissions
 
 ### Show specific permission
 
-Get application by ID. Returns single application object.
+Get permission by ID. Returns single permission object.
 
 Request:
 
@@ -1250,6 +1256,309 @@ localhost:8443/v1/permissions/6246f30687ead2746d1340a2
 < Date: Fri, 01 Apr 2022 13:02:58 GMT
 ```
 
+## Manage Roles
+
+### List Roles
+
+List all roles. Returns an array of role objects.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/roles
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+403 Forbidden
+503 Internal server error
+
+# Body
+Array of roles objects
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTY0Mjk3ODMsImlzcyI6Imx5cmUtYmUtdjQifQ.JQnMKs0hy-GMoEf1Vh021grOefPJmSk649bBkBXN5-Y" \
+localhost:8443/v1/roles
+
+# Response
+< HTTP/1.1 200 OK
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token
+< Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+< Content-Type: application/json
+< Date: Sun, 29 May 2022 15:17:50 GMT
+< Content-Length: 330
+<
+[
+    {
+        "id": "6242d43e99fd59c176c52fd4",
+        "name": "System management",
+        "description": "System management role",
+        "apps": [
+            "6242d43e99fd59c176c52fd3",
+            "6245984799fd59c176c52fd5",
+            "6246d923ad35f14740a5fa79",
+            "62937983ec569fe63ccffebc"
+        ]
+    }
+]
+```
+
+### Show specific role
+
+Get role by ID. Returns single role object.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/role/{id}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single role object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTY0Mjk3ODMsImlzcyI6Imx5cmUtYmUtdjQifQ.JQnMKs0hy-GMoEf1Vh021grOefPJmSk649bBkBXN5-Y" \
+localhost:8443/v1/roles/6242d43e99fd59c176c52fd4
+
+# Response
+< HTTP/1.1 200 OK
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token
+< Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+< Content-Type: application/json
+< Date: Sun, 29 May 2022 15:24:05 GMT
+< Content-Length: 282
+<
+{
+    "id": "6242d43e99fd59c176c52fd4",
+    "name": "System management",
+    "description": "System management role",
+    "apps": [
+        "6242d43e99fd59c176c52fd3",
+        "6245984799fd59c176c52fd5",
+        "6246d923ad35f14740a5fa79",
+        "62937983ec569fe63ccffebc"
+    ]
+}
+```
+
+### Create role
+
+Create new role.
+
+Request:
+
+```applescript
+# Endpoint
+POST /v1/roles
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Role object
+{
+    "name": "Alison's role",
+    "description": "Optional description",
+    "apps": [Objectid1, Objectid2],
+}
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single role object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPOST \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTY0Mjk3ODMsImlzcyI6Imx5cmUtYmUtdjQifQ.JQnMKs0hy-GMoEf1Vh021grOefPJmSk649bBkBXN5-Y" \
+-H "Content-Type: application/json" \
+-d '{"name":"New role#2", "apps":["6246d923ad35f14740a5fa79"]}' \
+localhost:8443/v1/roles
+
+< HTTP/1.1 200 OK
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token
+< Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+< Content-Type: application/json
+< Date: Sun, 29 May 2022 15:33:23 GMT
+< Content-Length: 145
+<
+{
+    "id": "62939243ef10cbbc03b16c41",
+    "name": "New role#2",
+    "description": "",
+    "apps": [
+        "6246d923ad35f14740a5fa79"
+    ]
+}
+```
+
+### Update role
+
+Please note, that because of MongoDB specific, this request actually replaces the whole document.  
+
+This is the Update - so, all references to this object will be preserved. 
+
+Request:
+
+```applescript
+# Endpoint
+PUT /v1/roles/{ID}
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Role object in format as following:
+{
+    "name": "My new role",
+    "apps": [],
+}
+```
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Permission object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPUT \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTY0Mjk3ODMsImlzcyI6Imx5cmUtYmUtdjQifQ.JQnMKs0hy-GMoEf1Vh021grOefPJmSk649bBkBXN5-Y" \
+-H "Content-Type: application/json" \
+-d '{"name":"test1", "apps":["62937983ec569fe63ccffebc"]}' \
+localhost:8443/v1/roles/62939243ef10cbbc03b16c41
+
+# Response
+< HTTP/1.1 200 OK
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token
+< Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+< Content-Type: application/json
+< Date: Sun, 29 May 2022 15:38:26 GMT
+< Content-Length: 140
+<
+{
+    "id": "62939243ef10cbbc03b16c41",
+    "name": "test1",
+    "description": "",
+    "apps": [
+        "62937983ec569fe63ccffebc"
+    ]
+}
+```
+
+### Remove role
+Removes role document from `roles` collection.  
+
+@TODO and @NOTE:  
+_after deletion, references to the removed roles still exist in `users` collection, but because it can't be resolved, this role is no longer available. Todo - cascading remove references from `users` collections inside transaction_.
+
+Request:
+
+```applescript
+# Endpoint
+DELETE /v1/roles/{ID}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+204 No content
+400 Bad request
+403 Forbidden
+503 Internal server error
+```
+
+Please note, the `DELETE` method returns empty body. Only the status code.
+
+Examples:
+
+```applescript
+# Request
+curl -v -XDELETE \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTY0Mjk3ODMsImlzcyI6Imx5cmUtYmUtdjQifQ.JQnMKs0hy-GMoEf1Vh021grOefPJmSk649bBkBXN5-Y" \
+localhost:8443/v1/roles/62939243ef10cbbc03b16c41
+
+# Response
+< HTTP/1.1 204 No Content
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token
+< Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+< Content-Type: application/json
+< Date: Sun, 29 May 2022 15:42:18 GMT
+```
 
 # Internals
 ## ACL
@@ -1284,20 +1593,20 @@ Bare `users` element looks like
 
 ```javascript
 {
-	"_id" : ObjectId("6243334ff0326c4cf6986459"),
-	"name" : "user4",
-	"email" : "user4@dev.null",
-	"password" : "$2a$11$Tf13APpPJjy5qBGuW2o.busG76M3mTfTiaR5o4oHUIaY5rQhlrsAG",
-	"acl" : [
-		{
-			"application" : {
-				"_id" : ObjectId("620524994a84ecd9ac78f620")
-			},
-			"permissions" : {
-				"_id" : ObjectId("620524134a84ecd9ac78f61f")
-			}
-		}
-	]
+    "_id" : ObjectId("6243334ff0326c4cf6986459"),
+    "name" : "user4",
+    "email" : "user4@dev.null",
+    "password" : "$2a$11$Tf13APpPJjy5qBGuW2o.busG76M3mTfTiaR5o4oHUIaY5rQhlrsAG",
+    "acl" : [
+        {
+            "application" : {
+                "_id" : ObjectId("620524994a84ecd9ac78f620")
+            },
+            "permissions" : {
+                "_id" : ObjectId("620524134a84ecd9ac78f61f")
+            }
+        }
+    ]
 }
 ```
 
@@ -1325,84 +1634,84 @@ Suppose there is a logged in user, which has valid token. On each request we're 
 
 ```javascript
 {
-	"_id" : ObjectId("6243308399fd59c176c52fd4"),
-	"name" : "admin",
-	"email" : "root@dev.null",
-	"password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
-	"acl" : [
-		{
-			"application" : {
-				"_id" : ObjectId("620524994a84ecd9ac78f620")
-			},
-			"permissions" : {
-				"_id" : ObjectId("620524134a84ecd9ac78f61f")
-			},
-			"app_details" : {
-				"_id" : ObjectId("620524994a84ecd9ac78f620"),
-				"name" : "Sample One",
-				"path" : "/sample"
-			},
-			"perm_details" : {
-				"_id" : ObjectId("620524134a84ecd9ac78f61f"),
-				"name" : "Full Access",
-				"description" : "Full access to Application",
-				"methods" : [
-					"GET",
-					"POST",
-					"PUT",
-					"DELETE"
-				]
-			}
-		},
-		{
-			"application" : {
-				"_id" : ObjectId("620527c04a84ecd9ac78f622")
-			},
-			"permissions" : {
-				"_id" : ObjectId("620524134a84ecd9ac78f61f")
-			},
-			"app_details" : {
-				"_id" : ObjectId("620527c04a84ecd9ac78f622"),
-				"name" : "Another One",
-				"path" : "/another"
-			},
-			"perm_details" : {
-				"_id" : ObjectId("620524134a84ecd9ac78f61f"),
-				"name" : "Full Access",
-				"description" : "Full access to Application",
-				"methods" : [
-					"GET",
-					"POST",
-					"PUT",
-					"DELETE"
-				]
-			}
-		},
-		{
-			"application" : {
-				"_id" : ObjectId("6242d43e99fd59c176c52fd3")
-			},
-			"permissions" : {
-				"_id" : ObjectId("620524134a84ecd9ac78f61f")
-			},
-			"app_details" : {
-				"_id" : ObjectId("6242d43e99fd59c176c52fd3"),
-				"name" : "User management application",
-				"path" : "/users"
-			},
-			"perm_details" : {
-				"_id" : ObjectId("620524134a84ecd9ac78f61f"),
-				"name" : "Full Access",
-				"description" : "Full access to Application",
-				"methods" : [
-					"GET",
-					"POST",
-					"PUT",
-					"DELETE"
-				]
-			}
-		}
-	]
+    "_id" : ObjectId("6243308399fd59c176c52fd4"),
+    "name" : "admin",
+    "email" : "root@dev.null",
+    "password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
+    "acl" : [
+        {
+            "application" : {
+                "_id" : ObjectId("620524994a84ecd9ac78f620")
+            },
+            "permissions" : {
+                "_id" : ObjectId("620524134a84ecd9ac78f61f")
+            },
+            "app_details" : {
+                "_id" : ObjectId("620524994a84ecd9ac78f620"),
+                "name" : "Sample One",
+                "path" : "/sample"
+            },
+            "perm_details" : {
+                "_id" : ObjectId("620524134a84ecd9ac78f61f"),
+                "name" : "Full Access",
+                "description" : "Full access to Application",
+                "methods" : [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE"
+                ]
+            }
+        },
+        {
+            "application" : {
+                "_id" : ObjectId("620527c04a84ecd9ac78f622")
+            },
+            "permissions" : {
+                "_id" : ObjectId("620524134a84ecd9ac78f61f")
+            },
+            "app_details" : {
+                "_id" : ObjectId("620527c04a84ecd9ac78f622"),
+                "name" : "Another One",
+                "path" : "/another"
+            },
+            "perm_details" : {
+                "_id" : ObjectId("620524134a84ecd9ac78f61f"),
+                "name" : "Full Access",
+                "description" : "Full access to Application",
+                "methods" : [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE"
+                ]
+            }
+        },
+        {
+            "application" : {
+                "_id" : ObjectId("6242d43e99fd59c176c52fd3")
+            },
+            "permissions" : {
+                "_id" : ObjectId("620524134a84ecd9ac78f61f")
+            },
+            "app_details" : {
+                "_id" : ObjectId("6242d43e99fd59c176c52fd3"),
+                "name" : "User management application",
+                "path" : "/users"
+            },
+            "perm_details" : {
+                "_id" : ObjectId("620524134a84ecd9ac78f61f"),
+                "name" : "Full Access",
+                "description" : "Full access to Application",
+                "methods" : [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE"
+                ]
+            }
+        }
+    ]
 }
 ```
 
@@ -1444,30 +1753,36 @@ Regarding ACL implementation adding new routes should conform following rule:
 Example for some application:
 
 ```go
-	r.Get(
-		filepath.Join(root, "/myapplication"),
-		middlewares.Chain(
-			middlewares.IsAuthorized,
-			middlewares.GetUser,
-			middlewares.IsPermit,
-			appHandler().get,
-		),
-	)
+    r.Get(
+        filepath.Join(root, "/myapplication"),
+        middlewares.Chain(
+            middlewares.IsAuthorized,
+            middlewares.GetUser,
+            middlewares.IsPermit,
+            appHandler().get,
+        ),
+    )
 ```
 
 Example for main application, removing current session (logout):
 
 ```go
-	r.Delete(
-		filepath.Join(root, "/sessions"),
-		middlewares.Chain(
-			middlewares.IsAuthorized,
-			middlewares.GetUser,
-			// Take a look, that there is no IsPermit middleware
-			sessionsHandler().remove,
-		),
-	)
+    r.Delete(
+        filepath.Join(root, "/sessions"),
+        middlewares.Chain(
+            middlewares.IsAuthorized,
+            middlewares.GetUser,
+            // Take a look, that there is no IsPermit middleware
+            sessionsHandler().remove,
+        ),
+    )
 ```
+
+## Notes
+
+Please note, that `roles` are meta thing, which is used for grouping application only.
+@TODO describe how it works
+@TODO Roulting as a first person may be
 
 ## Development
 
@@ -1484,11 +1799,8 @@ Example for main application, removing current session (logout):
 
 # TODO
 
-- Database initialisation script/app
-- Dockerfile
 - CI/CD pipeline
 - Integration (e2e) test
-- CORS support
 
 TODO @3d0c
 

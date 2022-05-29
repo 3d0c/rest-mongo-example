@@ -13,7 +13,6 @@ import (
 )
 
 // PermissionScheme nolint
-// @index name (uniq)
 type PermissionScheme struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Name        string             `bson:"name,omitempty" json:"name"`
@@ -64,7 +63,7 @@ func NewPermission() (*Permission, error) {
 	}, nil
 }
 
-// FindAll finds all applications
+// FindAll finds all permissions
 func (p *Permission) FindAll() ([]PermissionScheme, error) {
 	var (
 		result []PermissionScheme
