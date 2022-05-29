@@ -10,51 +10,63 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// ApplicationScheme model
-// @index uniq name
-// @index uniq path
-// @index (name,path) uniq
-type ApplicationScheme struct {
-	ID   primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name string             `bson:"name,omitempty" json:"name"`
-	Path string             `bson:"path,omitempty" json:"path"`
+// RoleScheme nolint
+type RoleScheme struct {
+	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name        string             `bson:"name,omitempty" json:"name"`
+	Description string             `bson:"description,omitempty" json:"description"`
+	Apps        []string           `bson:"apps,omitempty" json:"apps,omitempty"`
 }
 
 // Bind interface
 // @TODO Add validation package
-// @TODO validate application path, must contain "/"
-func (as *ApplicationScheme) Bind(r *http.Request) error {
-	if as.Name == "" {
-		return fmt.Errorf("application name is required")
-	}
-	if as.Path == "" {
-		return fmt.Errorf("application path is required")
+func (rs *RoleScheme) Bind(r *http.Request) error {
+	var (
+		am  *Application
+		err error
+	)
+
+	if rs.Name == "" {
+		return fmt.Errorf("role name is required")
 	}
 
-	as.ID = primitive.NilObjectID
+	if am, err = NewApplication(); err != nil {
+		return fmt.Errorf("error initializing application model - %s", err)
+	}
+
+	for _, aid := range rs.Apps {
+		if _, err = am.FindByID(aid); err != nil {
+			if err == ErrNotFound {
+				return fmt.Errorf("application '%s' is not exist", aid)
+			}
+			return fmt.Errorf("error finding application '%s' - %s", aid, err)
+		}
+	}
+
+	rs.ID = primitive.NilObjectID
 
 	return nil
 }
 
-// Application model
-type Application struct {
+// Role model
+type Role struct {
 	*base
 }
 
-// NewApplication permission model constructor
-func NewApplication() (*Application, error) {
-	return &Application{
+// NewRole role model constructor
+func NewRole() (*Role, error) {
+	return &Role{
 		base: &base{
-			Collection: DB().Collection("applications"),
+			Collection: DB().Collection("roles"),
 		},
 	}, nil
 }
 
-// FindAll finds all applications
-func (a *Application) FindAll() ([]ApplicationScheme, error) {
+// FindAll finds all roles
+func (r *Role) FindAll() ([]RoleScheme, error) {
 	var (
-		result []ApplicationScheme
-		elem   ApplicationScheme
+		result []RoleScheme
+		elem   RoleScheme
 		cursor *mongo.Cursor
 		err    error
 	)
@@ -62,7 +74,7 @@ func (a *Application) FindAll() ([]ApplicationScheme, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	if cursor, err = a.Find(ctx, all); err != nil {
+	if cursor, err = r.Find(ctx, all); err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
@@ -79,7 +91,7 @@ func (a *Application) FindAll() ([]ApplicationScheme, error) {
 }
 
 // FindByID add $match by id
-func (a *Application) FindByID(i interface{}) (*ApplicationScheme, error) {
+func (r *Role) FindByID(i interface{}) (*RoleScheme, error) {
 	var (
 		oid primitive.ObjectID
 		err error
@@ -98,13 +110,13 @@ func (a *Application) FindByID(i interface{}) (*ApplicationScheme, error) {
 		return nil, fmt.Errorf("wrong input type '%s', expecting (string) or (ObjectID)", v)
 	}
 
-	return a.find(bson.M{"_id": oid})
+	return r.find(bson.M{"_id": oid})
 }
 
 // find general find function
-func (a *Application) find(match bson.M) (*ApplicationScheme, error) {
+func (r *Role) find(match bson.M) (*RoleScheme, error) {
 	var (
-		result ApplicationScheme
+		result RoleScheme
 		cursor *mongo.Cursor
 		err    error
 	)
@@ -112,7 +124,7 @@ func (a *Application) find(match bson.M) (*ApplicationScheme, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	if cursor, err = a.Find(ctx, match); err != nil {
+	if cursor, err = r.Find(ctx, match); err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
@@ -125,14 +137,12 @@ func (a *Application) find(match bson.M) (*ApplicationScheme, error) {
 		return &result, nil
 	}
 	// else returns nil. to prevent initialized but empty structure
-	return nil, ErrNotFound
+	return nil, fmt.Errorf("nothing found")
 }
 
-// Create creates new application document into `applications` collection
+// Create creates new role document into `roles` collection
 // returns oid as hex encoded string and error
-// @TODO add validation for IDs of applications and permission check its existence
-//       could be done as exception of uniq index
-func (a *Application) Create(app *ApplicationScheme) (string, error) {
+func (r *Role) Create(role *RoleScheme) (string, error) {
 	var (
 		result *mongo.InsertOneResult
 		oid    primitive.ObjectID
@@ -143,7 +153,7 @@ func (a *Application) Create(app *ApplicationScheme) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	if result, err = a.InsertOne(ctx, app); err != nil {
+	if result, err = r.InsertOne(ctx, role); err != nil {
 		return "", err
 	}
 

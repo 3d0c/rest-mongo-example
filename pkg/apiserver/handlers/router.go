@@ -195,5 +195,57 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 		),
 	)
 
+	// Roles management
+	// List all roles
+	r.Get(
+		filepath.Join(root, "/roles"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			rolesHandler().get,
+		),
+	)
+	// Get specific role
+	r.Get(
+		filepath.Join(root, "/roles/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			rolesHandler().getByID,
+		),
+	)
+	// Create role
+	r.Post(
+		filepath.Join(root, "/roles"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			rolesHandler().create,
+		),
+	)
+	// Update role
+	r.Put(
+		filepath.Join(root, "/roles/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			rolesHandler().update,
+		),
+	)
+	// Remove role
+	r.Delete(
+		filepath.Join(root, "/roles/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			rolesHandler().remove,
+		),
+	)
+
 	return r
 }

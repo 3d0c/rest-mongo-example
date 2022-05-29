@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -10,6 +11,9 @@ import (
 
 var (
 	all = bson.M{}
+
+	// ErrNotFound error type
+	ErrNotFound = errors.New("nothing found")
 )
 
 type base struct {
