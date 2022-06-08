@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -18,13 +19,26 @@ type UserSchemeType struct{}
 
 // UserScheme params
 type UserScheme struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name     string             `bson:"name" json:"user_name"`
-	Email    string             `bson:"email" json:"email"`
-	Password *string            `bson:"password" json:"password,omitempty"`
-	ACL      []ACLScheme        `bson:"acl" json:"acl"`
-	Roles    []string           `bson:"roles" json:"roles"`
-	Avatar   string             `bson:"avatar" json:"avatar"`
+	ID primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+
+	Name        string      `bson:"username" json:"user_name"`
+	Email       string      `bson:"email" json:"email"`
+	Password    *string     `bson:"password" json:"password,omitempty"`
+	ACL         []ACLScheme `bson:"acl" json:"acl"`
+	Roles       []string    `bson:"roles" json:"roles"`
+	Avatar      string      `bson:"avatar" json:"avatar"`
+	FirstName   string      `bson:"first_name" json:"first_name"`
+	LastName    string      `bson:"last_name" json:"last_name"`
+	PlantID     string      `bson:"plant_id" json:"plant_id"`
+	Printer     string      `bson:"printer" json:"printer"`
+	LastLogin   time.Time   `bson:"last_login" json:"last_login,omitempty"`
+	CreatedBy   string      `bson:"created_by" json:"created_by"`
+	CreatedDate time.Time   `bson:"created_date" json:"created_date,omitempty"`
+	UpdatedBy   string      `bson:"updated_by" json:"updated_by"`
+	UpdatedDate time.Time   `bson:"updated_date" json:"updated_date,omitempty"`
+	Status      int         `bson:"status" json:"status"`
+	SapID       string      `bson:"sap_id" json:"sap_id"`
+	SapPwd      string      `bson:"sap_pwd" json:"sap_pwd"`
 }
 
 // Bind interface
