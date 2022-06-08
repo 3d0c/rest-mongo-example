@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -11,7 +12,7 @@ import (
 )
 
 type users struct {
-	// *models.UserScheme // @TODO init current user from constructor
+	// *models.UserScheme
 }
 
 func usersHandler() *users {
@@ -62,6 +63,7 @@ func (u *users) getByID(_ http.ResponseWriter, r *http.Request) (interface{}, in
 func (u *users) create(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 	var (
 		request *models.UserScheme = &models.UserScheme{}
+		current *models.UserScheme
 		result  *models.UserScheme
 		um      *models.User
 		uid     string
@@ -72,9 +74,18 @@ func (u *users) create(_ http.ResponseWriter, r *http.Request) (interface{}, int
 		return nil, http.StatusBadRequest, fmt.Errorf("error binding input data - %s", err)
 	}
 
+	if current = r.Context().Value(models.UserSchemeType{}).(*models.UserScheme); current == nil {
+		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing current user")
+	}
+
 	if um, err = models.NewUser(); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing user model - %s", err)
 	}
+
+	request.CreatedDate = time.Now().UTC()
+	request.CreatedBy = current.Name
+	request.UpdatedDate = time.Now().UTC()
+	request.UpdatedBy = current.Name
 
 	if uid, err = um.Create(request); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error creating user - %s", err)
@@ -90,6 +101,7 @@ func (u *users) create(_ http.ResponseWriter, r *http.Request) (interface{}, int
 func (u *users) update(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 	var (
 		request *models.UserScheme = &models.UserScheme{}
+		current *models.UserScheme
 		result  *models.UserScheme
 		um      *models.User
 		uid     string = chi.URLParam(r, "ID")
@@ -100,9 +112,16 @@ func (u *users) update(_ http.ResponseWriter, r *http.Request) (interface{}, int
 		return nil, http.StatusBadRequest, fmt.Errorf("error binding input data - %s", err)
 	}
 
+	if current = r.Context().Value(models.UserSchemeType{}).(*models.UserScheme); current == nil {
+		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing current user")
+	}
+
 	if um, err = models.NewUser(); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing user model - %s", err)
 	}
+
+	request.UpdatedDate = time.Now().UTC()
+	request.UpdatedBy = current.Name
 
 	if err = um.Update(uid, request); err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("error updating user '%s' - %s", uid, err)
