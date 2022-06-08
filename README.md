@@ -16,6 +16,8 @@ Lyre-Be-V4 Documentation
         - [Create user](#create-user)
         - [Update user](#update-user)
         - [Delete user](#delete-user)
+    - [Manage User](#manage-user)
+        - [Get user](#get-user)
     - [Manage Applications](#manage-applications)
         - [List applications](#list-applications)
         - [Show specific application](#show-specific-application)
@@ -671,6 +673,46 @@ localhost:8443/v1/users/62436b5ab97ea7529242bad6
 < Content-Type: application/json
 < Date: Tue, 29 Mar 2022 22:11:51 GMT
 ```
+
+## Manage User
+
+This group of endpoints are using for "self-management". Because user cannot get it's own profile without knowing it's identifier.
+
+### Get user
+Get user using ID from token. Returns complete user model or error.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/user
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+```applescript
+# Expected status codes
+200 OK
+403 Forbidden
+503 Internal server error
+
+# Body
+Single user model
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XDELETE \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
+localhost:8443/v1/user
+```
+
 
 ## Manage Applications
 

@@ -91,6 +91,17 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 		),
 	)
 
+	// User controller. Used to get user from token
+	// Get current user
+	r.Get(
+		filepath.Join(root, "/user"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			userHandler().get,
+		),
+	)
+
 	// Applications management
 	// List all applications
 	r.Get(
