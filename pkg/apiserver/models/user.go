@@ -41,6 +41,11 @@ type UserScheme struct {
 	SapPwd      string      `bson:"sap_pwd" json:"sap_pwd"`
 }
 
+type Password struct {
+	OldPassword string `bson:"oldpassword" json:"oldpassword,omitempty" `
+	NewPassword string `bson:"newpassword" json:"newpassword,omitempty" `
+}
+
 // Bind interface
 // TODO Add validation package
 func (u *UserScheme) Bind(r *http.Request) error {
@@ -61,6 +66,21 @@ func (u *UserScheme) Bind(r *http.Request) error {
 		}
 
 		u.Avatar = fileName
+	}
+
+	return nil
+}
+
+func (u *Password) Bind(r *http.Request) error {
+
+	//u.ID = primitive.NilObjectID
+
+	if u.OldPassword == "" {
+		return fmt.Errorf("old password is required")
+	}
+
+	if u.OldPassword == "" {
+		return fmt.Errorf("new password is required")
 	}
 
 	return nil

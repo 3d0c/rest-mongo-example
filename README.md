@@ -674,6 +674,22 @@ localhost:8443/v1/users/62436b5ab97ea7529242bad6
 < Date: Tue, 29 Mar 2022 22:11:51 GMT
 ```
 
+### Update User Password
+Updates the user password from `users` collection.
+
+Request:
+
+```applescript
+# Endpoint
+PUT /v1/users/password/{ID}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+{"oldpassword": "default_password2", "newpassword": "default_password"}
+
+
 ## Manage User
 
 This group of endpoints are using for "self-management". Because user cannot get it's own profile without knowing it's identifier.
