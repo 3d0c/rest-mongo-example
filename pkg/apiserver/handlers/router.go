@@ -80,6 +80,16 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 			usersHandler().update,
 		),
 	)
+	// Update user password
+	r.Put(
+		filepath.Join(root, "/users/password/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			usersHandler().updatePassword,
+		),
+	)
 	// Remove user
 	r.Delete(
 		filepath.Join(root, "/users/{ID}"),
