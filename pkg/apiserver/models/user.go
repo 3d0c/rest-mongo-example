@@ -42,8 +42,8 @@ type UserScheme struct {
 }
 
 type Password struct {
-	OldPassword string `bson:"oldpassword" json:"oldpassword,omitempty" `
-	NewPassword string `bson:"newpassword" json:"newpassword,omitempty" `
+	OldPassword string `bson:"old_password" json:"old_password,omitempty" `
+	NewPassword string `bson:"new_password" json:"new_password,omitempty" `
 }
 
 // Bind interface

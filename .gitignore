@@ -16,5 +16,6 @@ mem.out
 
 # git diff files
 *.diff
+docker-compose-dev.yaml
 
 tmp
