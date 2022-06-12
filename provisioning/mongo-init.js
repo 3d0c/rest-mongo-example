@@ -109,6 +109,14 @@ db.users.insertMany([
             },
             {
                 "application" : {
+                    "_id" : ObjectId("62937983ec569fe63ccffebc")
+                },
+                "permissions" : {
+                    "_id" : ObjectId("620524134a84ecd9ac78f61f")
+                }
+            },
+            {
+                "application" : {
                     "_id" : ObjectId("6246d923ad35f14740a5fa79")
                 },
                 "permissions" : {

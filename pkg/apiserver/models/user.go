@@ -66,7 +66,7 @@ func (u *UserScheme) Bind(r *http.Request) error {
 	return nil
 }
 
-// IsAllowed checks path is allowed for this user
+// IsAllowed checks is it allowed application for user
 func (u *UserScheme) IsAllowed(path string) bool {
 	for i := range u.ACL {
 		if u.ACL[i].Path == path {
