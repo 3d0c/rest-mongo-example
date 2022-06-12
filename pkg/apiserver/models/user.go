@@ -21,24 +21,24 @@ type UserSchemeType struct{}
 type UserScheme struct {
 	ID primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 
-	Name        string      `bson:"username" json:"user_name"`
-	Email       string      `bson:"email" json:"email"`
-	Password    *string     `bson:"password" json:"password,omitempty"`
-	ACL         []ACLScheme `bson:"acl" json:"acl"`
-	Roles       []string    `bson:"roles" json:"roles"`
-	Avatar      string      `bson:"avatar" json:"avatar"`
-	FirstName   string      `bson:"first_name" json:"first_name"`
-	LastName    string      `bson:"last_name" json:"last_name"`
-	PlantID     string      `bson:"plant_id" json:"plant_id"`
-	Printer     string      `bson:"printer" json:"printer"`
-	LastLogin   time.Time   `bson:"last_login" json:"last_login,omitempty"`
-	CreatedBy   string      `bson:"created_by" json:"created_by"`
-	CreatedDate time.Time   `bson:"created_date" json:"created_date,omitempty"`
-	UpdatedBy   string      `bson:"updated_by" json:"updated_by"`
-	UpdatedDate time.Time   `bson:"updated_date" json:"updated_date,omitempty"`
-	Status      int         `bson:"status" json:"status"`
-	SapID       string      `bson:"sap_id" json:"sap_id"`
-	SapPwd      string      `bson:"sap_pwd" json:"sap_pwd"`
+	Name        string              `bson:"username" json:"user_name"`
+	Email       string              `bson:"email" json:"email"`
+	Password    *string             `bson:"password" json:"password,omitempty"`
+	ACL         []ApplicationScheme `bson:"acl" json:"acl,omitempty"`
+	Roles       []string            `bson:"roles" json:"roles"`
+	Avatar      string              `bson:"avatar" json:"avatar"`
+	FirstName   string              `bson:"first_name" json:"first_name"`
+	LastName    string              `bson:"last_name" json:"last_name"`
+	PlantID     string              `bson:"plant_id" json:"plant_id"`
+	Printer     string              `bson:"printer" json:"printer"`
+	LastLogin   time.Time           `bson:"last_login" json:"last_login,omitempty"`
+	CreatedBy   string              `bson:"created_by" json:"created_by"`
+	CreatedDate time.Time           `bson:"created_date" json:"created_date,omitempty"`
+	UpdatedBy   string              `bson:"updated_by" json:"updated_by"`
+	UpdatedDate time.Time           `bson:"updated_date" json:"updated_date,omitempty"`
+	Status      int                 `bson:"status" json:"status"`
+	SapID       string              `bson:"sap_id" json:"sap_id"`
+	SapPwd      string              `bson:"sap_pwd" json:"sap_pwd"`
 }
 
 // Bind interface
@@ -66,15 +66,15 @@ func (u *UserScheme) Bind(r *http.Request) error {
 	return nil
 }
 
-// GetPermission returns permission by application path
-func (u *UserScheme) GetPermission(path string) *PermissionScheme {
-	for _, acl := range u.ACL {
-		if acl.Application.Path == path {
-			return acl.Permissions
+// IsAllowed checks path is allowed for this user
+func (u *UserScheme) IsAllowed(path string) bool {
+	for i := range u.ACL {
+		if u.ACL[i].Path == path {
+			return true
 		}
 	}
 
-	return nil
+	return false
 }
 
 // User model

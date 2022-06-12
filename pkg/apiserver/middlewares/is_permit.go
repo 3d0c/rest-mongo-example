@@ -16,7 +16,6 @@ func IsPermit(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) 
 	var (
 		appPath string
 		user    *models.UserScheme
-		perm    *models.PermissionScheme
 	)
 
 	getAppPath := func(path string) string {
@@ -39,12 +38,8 @@ func IsPermit(_ http.ResponseWriter, r *http.Request) (interface{}, int, error) 
 		return nil, http.StatusInternalServerError, fmt.Errorf("error casting to *models.UserScheme")
 	}
 
-	if perm = user.GetPermission(appPath); perm == nil {
-		return nil, http.StatusForbidden, fmt.Errorf("user doesn't have access to appplication '%s'", appPath)
-	}
-
-	if !perm.IsAllowed(r.Method) {
-		return nil, http.StatusForbidden, fmt.Errorf("user doesn't have such permission '%s' to application '%s'", r.Method, appPath)
+	if !user.IsAllowed(appPath) {
+		return nil, http.StatusForbidden, fmt.Errorf("user doesn't have permission to application '%s'", appPath)
 	}
 
 	return nil, http.StatusOK, nil
