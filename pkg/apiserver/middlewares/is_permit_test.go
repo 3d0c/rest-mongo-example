@@ -28,34 +28,10 @@ func TestIsPermit(t *testing.T) {
 			expectedStatus: 403,
 			assertFn:       assert.NotNil,
 			testUser: &models.UserScheme{
-				ACL: []models.ACLScheme{
+				ACL: []models.ApplicationScheme{
 					{
-						Application: &models.ApplicationScheme{
-							Name: "Example One",
-							Path: "wrongapplication",
-						},
-						Permissions: &models.PermissionScheme{
-							Methods: []string{"GET"},
-						},
-					},
-				},
-			},
-		},
-		{
-			description:    "Wrong method",
-			req:            httptest.NewRequest(http.MethodPut, "https://a/api/v1/application/u", nil),
-			expectedStatus: 403,
-			assertFn:       assert.NotNil,
-			testUser: &models.UserScheme{
-				ACL: []models.ACLScheme{
-					{
-						Application: &models.ApplicationScheme{
-							Name: "Example One",
-							Path: "application",
-						},
-						Permissions: &models.PermissionScheme{
-							Methods: []string{"POST"},
-						},
+						Name: "Example One",
+						Path: "/wrongapplication",
 					},
 				},
 			},
@@ -66,15 +42,10 @@ func TestIsPermit(t *testing.T) {
 			expectedStatus: 200,
 			assertFn:       assert.Nil,
 			testUser: &models.UserScheme{
-				ACL: []models.ACLScheme{
+				ACL: []models.ApplicationScheme{
 					{
-						Application: &models.ApplicationScheme{
-							Name: "Example One",
-							Path: "application",
-						},
-						Permissions: &models.PermissionScheme{
-							Methods: []string{"GET"},
-						},
+						Name: "Example One",
+						Path: "/application",
 					},
 				},
 			},

@@ -251,28 +251,34 @@ localhost:8443/v1/users
         "name" : "admin",
         "email" : "root@dev.null",
         "avatar": "path/uuid.ext"
-        "acl" : [
+        "acl": [
             {
-                "application" : ObjectId("620524994a84ecd9ac78f620"),
-                "permission" : ObjectId("620524134a84ecd9ac78f61f"),
-                "app_details" : {
-                    "_id" : ObjectId("620524994a84ecd9ac78f620"),
-                    "name" : "User management API",
-                    "path" : "/users"
-                },
-                "perm_details" : {
-                    "id" : ObjectId("620524134a84ecd9ac78f61f"),
-                    "name" : "Full Access",
-                    "description" : "Full access to Application",
-                    "methods" : [
-                        "GET",
-                        "POST",
-                        "PUT",
-                        "DELETE"
-                    ]
-                }
+                "id": "6242d43e99fd59c176c52fd3",
+                "name": "User management application",
+                "path": "/users"
             },
             {
+                "id": "6245984799fd59c176c52fd5",
+                "name": "Applications management",
+                "path": "/applications"
+            },
+            {
+                "id": "6246d923ad35f14740a5fa79",
+                "name": "Permissions management",
+                "path": "/permissions"
+            },
+            {
+                "id": "62937983ec569fe63ccffebc",
+                "name": "Roles management",
+                "path": "/roles"
+            },
+            {
+                "id": "6242d43e99fd59c176c52fd3",
+                "name": "User management application",
+                "path": "/users"
+            }
+        ],
+        {
                 "application" : ObjectId("620527c04a84ecd9ac78f622"),
                 "permission" : ObjectId("620524134a84ecd9ac78f61f"),
                 "app_details" : {
@@ -359,24 +365,32 @@ localhost:8443/v1/users/623ec112c8c51a6a37ae839d
     "email": "user1@dev.null",
     "avatar": "path/uuid.ext"
     "acl": [
-        {
-            "application": {
-                "id": "620524994a84ecd9ac78f620",
-                "name": "Sample One",
-                "path": "/sample"
+            {
+                "id": "6242d43e99fd59c176c52fd3",
+                "name": "User management application",
+                "path": "/users"
             },
-            "permissions": {
-                "id": "620524134a84ecd9ac78f61f",
-                "name": "Full Access",
-                "description": "Full access to Application",
-                "methods": [
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE"
-                ]
+            {
+                "id": "6245984799fd59c176c52fd5",
+                "name": "Applications management",
+                "path": "/applications"
+            },
+            {
+                "id": "6246d923ad35f14740a5fa79",
+                "name": "Permissions management",
+                "path": "/permissions"
+            },
+            {
+                "id": "62937983ec569fe63ccffebc",
+                "name": "Roles management",
+                "path": "/roles"
+            },
+            {
+                "id": "6242d43e99fd59c176c52fd3",
+                "name": "User management application",
+                "path": "/users"
             }
-        },
+        ],
         {
             "application": {
                 "id": "620527c04a84ecd9ac78f622",
@@ -424,18 +438,6 @@ Authorization: Bearer TOKEN
     "email": "user2@dev.null",
     "password": "plain_text_password",
     "avatar": "Image data URI scheme with base64 encoded data output"
-    "acl": [
-        {
-            # application id is getting from GET /applications request
-            "application": {
-                "id": "620524994a84ecd9ac78f620",
-            },
-            # permission id is getting from GET /permissions response
-            "permissions": {
-                "id": "620524134a84ecd9ac78f61f",
-            }
-        }
-    ],
     "roles": [
         "6242d43e99fd59c176c52fd4"
     ],    
@@ -467,14 +469,6 @@ curl -v -XPOST \
     "email": "user4@dev.null",
     "password": "default",
     // "avatar": not provided for example because of length
-    "acl": [{
-        "application": {
-            "id": "620524994a84ecd9ac78f620"
-        },
-        "permissions": {
-            "id": "620524134a84ecd9ac78f61f"
-        }
-    }],
     "roles": [
         "6242d43e99fd59c176c52fd4"
     ]    
@@ -493,22 +487,29 @@ curl -v -XPOST \
     "avatar": "path/uuid.ext"
     "acl": [
         {
-            "application": {
-                "id": "620524994a84ecd9ac78f620",
-                "name": "Sample One",
-                "path": "/sample"
-            },
-            "permissions": {
-                "id": "620524134a84ecd9ac78f61f",
-                "name": "Full Access",
-                "description": "Full access to Application",
-                "methods": [
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE"
-                ]
-            }
+            "id": "6242d43e99fd59c176c52fd3",
+            "name": "User management application",
+            "path": "/users"
+        },
+        {
+            "id": "6245984799fd59c176c52fd5",
+            "name": "Applications management",
+            "path": "/applications"
+        },
+        {
+            "id": "6246d923ad35f14740a5fa79",
+            "name": "Permissions management",
+            "path": "/permissions"
+        },
+        {
+            "id": "62937983ec569fe63ccffebc",
+            "name": "Roles management",
+            "path": "/roles"
+        },
+        {
+            "id": "6242d43e99fd59c176c52fd3",
+            "name": "User management application",
+            "path": "/users"
         }
     ],
     "roles": [
@@ -541,18 +542,6 @@ Authorization: Bearer TOKEN
     "email": "user6666@dev.null",
     "password": "plain_text_password", # This one is optional
     "avatar": "Image data URI scheme with base64 encoded data output"
-    "acl": [
-        {
-            # application id is getting from GET /applications request
-            "application": {
-                "id": "620524994a84ecd9ac78f620",
-            },
-            # permission id is getting from GET /permissions response
-            "permissions": {
-                "id": "620524134a84ecd9ac78f61f",
-            }
-        }
-    ],
     "roles": [
         "6242d43e99fd59c176c52fd4"
     ],    
@@ -583,14 +572,6 @@ curl -v -XPUT \
     "email": "user6@dev.null",
     "password": "default",
     "avatar": "path/uuid.ext"
-    "acl": [{
-        "application": {
-            "id": "6242d43e99fd59c176c52fd3"
-        },
-        "permissions": {
-            "id": "620524134a84ecd9ac78f61f"
-        }
-    }],
     "roles": [
         "6242d43e99fd59c176c52fd4"
     ],    
@@ -606,26 +587,33 @@ curl -v -XPUT \
     "id": "62436b5ab97ea7529242bad6",
     "user_name": "user6",
     "email": "user6@dev.null",
-    "acl": [
-        {
-            "application": {
-                "id": "6242d43e99fd59c176c52fd3",
-                "name": "User management application",
-                "path": "/users"
-            },
-            "permissions": {
-                "id": "620524134a84ecd9ac78f61f",
-                "name": "Full Access",
-                "description": "Full access to Application",
-                "methods": [
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE"
-                ]
-            }
-        }
-    ],
+	"acl" : [
+		{
+			"_id" : ObjectId("6242d43e99fd59c176c52fd3"),
+			"name" : "User management application",
+			"path" : "/users"
+		},
+		{
+			"_id" : ObjectId("6245984799fd59c176c52fd5"),
+			"name" : "Applications management",
+			"path" : "/applications"
+		},
+		{
+			"_id" : ObjectId("6246d923ad35f14740a5fa79"),
+			"name" : "Permissions management",
+			"path" : "/permissions"
+		},
+		{
+			"_id" : ObjectId("62937983ec569fe63ccffebc"),
+			"name" : "Roles management",
+			"path" : "/roles"
+		},
+		{
+			"_id" : ObjectId("6242d43e99fd59c176c52fd3"),
+			"name" : "User management application",
+			"path" : "/users"
+		}
+	]
     "roles": [
         "6242d43e99fd59c176c52fd4"
     ],    
@@ -681,14 +669,16 @@ Request:
 
 ```applescript
 # Endpoint
-PUT /v1/users/password/{ID}
+PUT /v1/users/{ID}/password
 
 # Expected authentication header
 Authorization: Bearer TOKEN
 
 # Payload
-{"oldpassword": "default_password2", "newpassword": "default_password"}
-
+{
+    "old_password": "default_password2", 
+    "new_password": "default_password"
+}
 
 ## Manage User
 
@@ -1636,35 +1626,24 @@ Current implementation of `user` object has three mandatory fields (in terms of 
 
 - Name
 - Email
-- ACLs
+- Password
 
-ACLs-field is a meta field. Which means it stores only referenced IDs in database.
+*ACL*  
+Please note, that `acl` is a meta field. It means, that it isn't stored inside DataBase but expanded on the fly based on `roles` ID's.
 
-ACL is an array of ACL structures, which has two objects
-
-- Application
-- Permissions
-
-This is a references to corresponding collection entities.
 
 Bare `users` element looks like
 
 ```javascript
 {
-    "_id" : ObjectId("6243334ff0326c4cf6986459"),
-    "name" : "user4",
-    "email" : "user4@dev.null",
-    "password" : "$2a$11$Tf13APpPJjy5qBGuW2o.busG76M3mTfTiaR5o4oHUIaY5rQhlrsAG",
-    "acl" : [
-        {
-            "application" : {
-                "_id" : ObjectId("620524994a84ecd9ac78f620")
-            },
-            "permissions" : {
-                "_id" : ObjectId("620524134a84ecd9ac78f61f")
-            }
-        }
-    ]
+	"_id" : ObjectId("6243308399fd59c176c52fd4"),
+	"name" : "admin",
+	"email" : "root@dev.null",
+	"password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
+	"roles" : [
+		ObjectId("6242d43e99fd59c176c52fd4"),
+		ObjectId("62a4a90e5d2fe1005407cd8b")
+	],
 }
 ```
 
@@ -1676,104 +1655,64 @@ Mandatory fields:
 - name
 - path
 
-#### `permissions`
-
-Permission is what particular user allowed to do with particular application. There are three default permissions:
-
-- `Read-Only` Allowed API method is `GET`
-- `Read-Write` Allowed API methods are `GET`, `POST`
-- `Full Access` Allowed API methods are `GET`, `POST`, `PUT`, `DELETE`
-
-To create these permissions one can use `fixtures/mongo.default`
-
 ### Example
 
 Suppose there is a logged in user, which has valid token. On each request we're getting a complete `user` model, which could be represented as a JSON like:
 
 ```javascript
 {
-    "_id" : ObjectId("6243308399fd59c176c52fd4"),
-    "name" : "admin",
-    "email" : "root@dev.null",
-    "password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
-    "acl" : [
+    "id": "6243308399fd59c176c52fd4",
+    "user_name": "",
+    "email": "root@dev.null",
+    "acl": [
         {
-            "application" : {
-                "_id" : ObjectId("620524994a84ecd9ac78f620")
-            },
-            "permissions" : {
-                "_id" : ObjectId("620524134a84ecd9ac78f61f")
-            },
-            "app_details" : {
-                "_id" : ObjectId("620524994a84ecd9ac78f620"),
-                "name" : "Sample One",
-                "path" : "/sample"
-            },
-            "perm_details" : {
-                "_id" : ObjectId("620524134a84ecd9ac78f61f"),
-                "name" : "Full Access",
-                "description" : "Full access to Application",
-                "methods" : [
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE"
-                ]
-            }
+            "id": "6242d43e99fd59c176c52fd3",
+            "name": "User management application",
+            "path": "/users"
         },
         {
-            "application" : {
-                "_id" : ObjectId("620527c04a84ecd9ac78f622")
-            },
-            "permissions" : {
-                "_id" : ObjectId("620524134a84ecd9ac78f61f")
-            },
-            "app_details" : {
-                "_id" : ObjectId("620527c04a84ecd9ac78f622"),
-                "name" : "Another One",
-                "path" : "/another"
-            },
-            "perm_details" : {
-                "_id" : ObjectId("620524134a84ecd9ac78f61f"),
-                "name" : "Full Access",
-                "description" : "Full access to Application",
-                "methods" : [
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE"
-                ]
-            }
+            "id": "6245984799fd59c176c52fd5",
+            "name": "Applications management",
+            "path": "/applications"
         },
         {
-            "application" : {
-                "_id" : ObjectId("6242d43e99fd59c176c52fd3")
-            },
-            "permissions" : {
-                "_id" : ObjectId("620524134a84ecd9ac78f61f")
-            },
-            "app_details" : {
-                "_id" : ObjectId("6242d43e99fd59c176c52fd3"),
-                "name" : "User management application",
-                "path" : "/users"
-            },
-            "perm_details" : {
-                "_id" : ObjectId("620524134a84ecd9ac78f61f"),
-                "name" : "Full Access",
-                "description" : "Full access to Application",
-                "methods" : [
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE"
-                ]
-            }
+            "id": "6246d923ad35f14740a5fa79",
+            "name": "Permissions management",
+            "path": "/permissions"
+        },
+        {
+            "id": "62937983ec569fe63ccffebc",
+            "name": "Roles management",
+            "path": "/roles"
+        },
+        {
+            "id": "6242d43e99fd59c176c52fd3",
+            "name": "User management application",
+            "path": "/users"
         }
-    ]
+    ],
+    "roles": [
+        "6242d43e99fd59c176c52fd4",
+        "62a4a90e5d2fe1005407cd8b"
+    ],
+    "avatar": "",
+    "first_name": "",
+    "last_name": "",
+    "plant_id": "",
+    "printer": "",
+    "last_login": "0001-01-01T00:00:00Z",
+    "created_by": "",
+    "created_date": "0001-01-01T00:00:00Z",
+    "updated_by": "",
+    "updated_date": "0001-01-01T00:00:00Z",
+    "status": 0,
+    "sap_id": "",
+    "sap_pwd": ""
 }
+
 ```
 
-At the middleware level, before we accept request in the controller, we can validate is it possible at all. Here we have two important things: Application Path `app_details.path` and permissions list for this application `perm_details.methods`.
+At the middleware level, before we accept request in the controller, we can validate is it possible at all. Validation is based on `acl[x].path`.
 
 As an example application got a request like (assuming user is authorised and we've got a complete user model)
 
@@ -1782,7 +1721,7 @@ __First one:__
 ```
 GET localhost:8443/api/v1/sample/users
                           ^^^^^^
-                      app_details.path
+                         acl.path
 ```
 
 As a result it's allowed to do this method.
@@ -1792,7 +1731,7 @@ __Second one:__
 ```
 POST localhost:8443/api/v1/another/documents
                           ^^^^^^
-                      app_details.path
+                         acl.path
 ```
 
 As a result user will get `403 Forbidden` because there is no such method in allowed list.
@@ -1816,7 +1755,6 @@ Example for some application:
         middlewares.Chain(
             middlewares.IsAuthorized,
             middlewares.GetUser,
-            middlewares.IsPermit,
             appHandler().get,
         ),
     )
@@ -1835,12 +1773,6 @@ Example for main application, removing current session (logout):
         ),
     )
 ```
-
-## Notes
-
-Please note, that `roles` are meta thing, which is used for grouping application only.
-@TODO describe how it works
-@TODO Roulting as a first person may be
 
 ## Development
 

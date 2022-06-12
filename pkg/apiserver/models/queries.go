@@ -7,39 +7,38 @@ import (
 func completeUserModel(match bson.M) []bson.M {
 	return []bson.M{
 		{
+			"$unwind": "$roles",
+		},
+		{
+			"$lookup": bson.M{
+				"from":         "roles",
+				"localField":   "roles",
+				"foreignField": "_id",
+				"as":           "acl",
+			},
+		},
+		{
 			"$unwind": "$acl",
+		},
+		{
+			"$unwind": "$acl.apps",
 		},
 		{
 			"$lookup": bson.M{
 				"from":         "applications",
-				"localField":   "acl.application._id",
+				"localField":   "acl.apps",
 				"foreignField": "_id",
-				"as":           "acl.application",
+				"as":           "acl.apps",
 			},
 		},
 		{
-			"$lookup": bson.M{
-				"from":         "permissions",
-				"localField":   "acl.permissions._id",
-				"foreignField": "_id",
-				"as":           "acl.permissions",
-			},
-		},
-		{
-			"$unwind": bson.M{
-				"path": "$acl.permissions",
-			},
-		},
-		{
-			"$unwind": bson.M{
-				"path": "$acl.application",
-			},
+			"$unwind": "$acl.apps",
 		},
 		{
 			"$group": bson.M{
 				"_id": "$_id",
 				"acl": bson.M{
-					"$push": "$acl",
+					"$push": "$acl.apps",
 				},
 			},
 		},
@@ -48,24 +47,23 @@ func completeUserModel(match bson.M) []bson.M {
 				"from":         "users",
 				"localField":   "_id",
 				"foreignField": "_id",
-				"as":           "aclDetails",
+				"as":           "userDetails",
 			},
 		},
 		{
-			"$unwind": bson.M{
-				"path": "$aclDetails",
-			},
+			"$unwind": "$userDetails",
 		},
 		{
 			"$addFields": bson.M{
-				"aclDetails.acl": "$acl",
+				"userDetails.acl": "$acl",
 			},
 		},
 		{
 			"$replaceRoot": bson.M{
-				"newRoot": "$aclDetails",
+				"newRoot": "$userDetails",
 			},
 		},
+
 		{
 			"$match": match,
 		},

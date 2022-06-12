@@ -82,7 +82,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Update user password
 	r.Put(
-		filepath.Join(root, "/users/password/{ID}"),
+		filepath.Join(root, "/users/{ID}/password"),
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
