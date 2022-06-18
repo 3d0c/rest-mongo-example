@@ -58,6 +58,11 @@ db.users.aggregate([
         $replaceRoot: {
             newRoot: '$userDetails'
         }
+    },
+    {
+        $match: {
+            "_id": ObjectId("6243308399fd59c176c52fd4")
+        }
     }
 ]).pretty()
 ```
