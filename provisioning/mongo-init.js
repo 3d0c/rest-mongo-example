@@ -10,39 +10,6 @@
 */
 db = db.getSiblingDB('v4');
 
-db.createCollection('permissions');
-db.permissions.insertMany([
-    {
-        "_id" : ObjectId("620524134a84ecd9ac78f61d"),
-        "name" : "Read-Only",
-        "description" : "Read only access to Application",
-        "methods" : [
-            "GET"
-        ]
-    },
-    {
-        "_id" : ObjectId("620524134a84ecd9ac78f61e"),
-        "name" : "Read-Write",
-        "description" : "Read and Create access to Application",
-        "methods" : [
-            "GET",
-            "POST"
-        ]
-    },
-    {
-        "_id" : ObjectId("620524134a84ecd9ac78f61f"),
-        "name" : "Full-Access",
-        "description" : "Full access to the Application",
-        "methods" : [
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE"
-        ]
-    },
-]);
-db.permissions.createIndex({ "name": 1 }, { unique: true });
-
 db.createCollection('applications');
 db.applications.insertMany([
     {
@@ -54,11 +21,6 @@ db.applications.insertMany([
         "_id" : ObjectId("6245984799fd59c176c52fd5"),
         "name" : "Applications management",
         "path" : "/applications"
-    },
-    {
-        "_id" : ObjectId("6246d923ad35f14740a5fa79"),
-        "name" : "Permissions management",
-        "path" : "/permissions"
     },
     {
         "_id" : ObjectId("62937983ec569fe63ccffebc"),
@@ -76,7 +38,6 @@ db.roles.insertMany([
         "apps": [
             ObjectId("6242d43e99fd59c176c52fd3"),
             ObjectId("6245984799fd59c176c52fd5"),
-            ObjectId("6246d923ad35f14740a5fa79"),
             ObjectId("62937983ec569fe63ccffebc")
         ]
     }
@@ -87,47 +48,13 @@ db.createCollection('users');
 db.users.insertMany([
     {
         "_id" : ObjectId("6243308399fd59c176c52fd4"),
-        "name" : "admin",
+        "username" : "admin",
         "email" : "root@dev.null",
         "password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
-        "acl" : [
-            {
-                "application" : {
-                    "_id" : ObjectId("6242d43e99fd59c176c52fd3")
-                },
-                "permissions" : {
-                    "_id" : ObjectId("620524134a84ecd9ac78f61f")
-                }
-            },
-            {
-                "application" : {
-                    "_id" : ObjectId("6245984799fd59c176c52fd5")
-                },
-                "permissions" : {
-                    "_id" : ObjectId("620524134a84ecd9ac78f61f")
-                }
-            },
-            {
-                "application" : {
-                    "_id" : ObjectId("62937983ec569fe63ccffebc")
-                },
-                "permissions" : {
-                    "_id" : ObjectId("620524134a84ecd9ac78f61f")
-                }
-            },
-            {
-                "application" : {
-                    "_id" : ObjectId("6246d923ad35f14740a5fa79")
-                },
-                "permissions" : {
-                    "_id" : ObjectId("620524134a84ecd9ac78f61f")
-                }
-            }
-        ],
         "roles": [
             ObjectId("6242d43e99fd59c176c52fd4") 
         ]
     }
 ])
-db.users.createIndex({ "name": 1 }, { unique: true });
+db.users.createIndex({ "username": 1 }, { unique: true });
 db.users.createIndex({ "email": 1 }, { unique: true });
