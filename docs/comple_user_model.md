@@ -70,40 +70,32 @@ __Expected result__
 
 ```javascript
 {
-	"_id" : ObjectId("6243308399fd59c176c52fd4"),
-	"name" : "admin",
-	"email" : "root@dev.null",
-	"password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
-	"roles" : [
-		ObjectId("6242d43e99fd59c176c52fd4"),
-		ObjectId("62a4a90e5d2fe1005407cd8b")
-	],
-	"acl" : [
-		{
-			"_id" : ObjectId("6242d43e99fd59c176c52fd3"),
-			"name" : "User management application",
-			"path" : "/users"
-		},
-		{
-			"_id" : ObjectId("6245984799fd59c176c52fd5"),
-			"name" : "Applications management",
-			"path" : "/applications"
-		},
-		{
-			"_id" : ObjectId("6246d923ad35f14740a5fa79"),
-			"name" : "Permissions management",
-			"path" : "/permissions"
-		},
-		{
-			"_id" : ObjectId("62937983ec569fe63ccffebc"),
-			"name" : "Roles management",
-			"path" : "/roles"
-		},
-		{
-			"_id" : ObjectId("6242d43e99fd59c176c52fd3"),
-			"name" : "User management application",
-			"path" : "/users"
-		}
-	]
+        "_id" : ObjectId("6243308399fd59c176c52fd4"),
+        "username" : "admin",
+        "email" : "root@dev.null",
+        "password" : "$2a$11$lAT02Pq3MiHefYLYM6ZrUO79swRZAHeE0x0/RX13lIRouX72Hzwr2",
+        "roles" : [
+                ObjectId("6242d43e99fd59c176c52fd4")
+        ],
+        "settings" : [
+                ObjectId("62c1c1c95e329ab2f7f8b0ee")
+        ],
+        "acl" : [
+                {
+                        "_id" : ObjectId("6242d43e99fd59c176c52fd3"),
+                        "name" : "User management application",
+                        "path" : "/users"
+                },
+                {
+                        "_id" : ObjectId("6245984799fd59c176c52fd5"),
+                        "name" : "Applications management",
+                        "path" : "/applications"
+                },
+                {
+                        "_id" : ObjectId("62937983ec569fe63ccffebc"),
+                        "name" : "Roles management",
+                        "path" : "/roles"
+                }
+        ]
 }
 ```
