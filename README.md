@@ -36,6 +36,18 @@ Lyre-Be-V4 Documentation
         - [Create role](#create-role)
         - [Update role](#update-role)
         - [Delete role](#delete-role)
+    - [Manage parameter](#manage-parameters)
+        - [List parameters](#list-parameters)
+        - [Show specific parameter](#show-specific-parameter)
+        - [Create parameter](#create-parameter)
+        - [Update parameter](#update-parameter)
+        - [Delete parameter](#delete-parameter)
+    - [Manage settings](#manage-settings)
+        - [List settings](#list-settings)
+        - [Show specific setting](#show-specific-setting)
+        - [Create setting](#create-setting)
+        - [Update setting](#update-setting)
+        - [Delete setting](#delete-setting)        
 - [Internals](#internals)
     - [ACL](#acl)
     - [Routing chain](#routing-chain)
@@ -679,6 +691,7 @@ Authorization: Bearer TOKEN
     "old_password": "default_password2", 
     "new_password": "default_password"
 }
+```
 
 ## Manage User
 
@@ -718,7 +731,6 @@ curl -v -XDELETE \
 -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTExNzczMzYsImlzcyI6Imx5cmUtYmUtdjQifQ.IE_e0z51K8STYfulVWCJpWky8nGOA3qVi416YQr1fhs" \
 localhost:8443/v1/user
 ```
-
 
 ## Manage Applications
 
@@ -1607,6 +1619,499 @@ localhost:8443/v1/roles/62939243ef10cbbc03b16c41
 < Content-Type: application/json
 < Date: Sun, 29 May 2022 15:42:18 GMT
 ```
+
+## Manage Parameters
+
+### List Parameters
+
+List all parameters. Returns an array of parameter objects.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/parameters
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+403 Forbidden
+503 Internal server error
+
+# Body
+Array of parameter objects
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTY0Mjk3ODMsImlzcyI6Imx5cmUtYmUtdjQifQ.JQnMKs0hy-GMoEf1Vh021grOefPJmSk649bBkBXN5-Y" \
+localhost:8443/v1/parameters
+
+# Response
+< HTTP/1.1 200 OK
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token
+< Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+< Content-Type: application/json
+< Date: Sun, 29 May 2022 15:17:50 GMT
+< Content-Length: 330
+<
+[
+    {
+        "id": "62b827d15e329ab2f7f8b0e9",
+        "name": "Sample Parameter 1",
+        "description": "Sample Parameter 1",
+        "comp_type": "select",
+        "data_type": "string",
+        "options": [
+            "Option 1",
+            "Option 2",
+            "Option 3"
+        ]
+    },
+    {
+        "id": "62b828485e329ab2f7f8b0ea",
+        "name": "Sample Parameter 2",
+        "description": "Sample Parameter 2",
+        "comp_type": "select",
+        "data_type": "string",
+        "options": [
+            "Option 1",
+            "Option 2",
+            "Option 3"
+        ]
+    }
+]
+```
+
+### Show specific parameter
+
+Get parameter by ID. Returns single parameter object.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/parameters/{id}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single role object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XGET \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTk0NjYxMjQsImlzcyI6Imx5cmUtYmUtdjQifQ.Lif2940XSSRleQ2AA0qLLNYFt9ZGxyVeipOPrx7WAIc" \
+http://localhost:8443/v1/parameters/62b827d15e329ab2f7f8b0e9
+
+# Response
+< HTTP/1.1 200 OK
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token
+< Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+< Content-Type: application/json
+< Date: Sun, 29 May 2022 15:24:05 GMT
+< Content-Length: 282
+<
+{
+    "id": "62b827d15e329ab2f7f8b0e9",
+    "name": "Sample Parameter 1",
+    "description": "Sample Parameter 1",
+    "comp_type": "select",
+    "data_type": "string",
+    "options": [
+        "01",
+        "02",
+        "03"
+    ]
+}
+```
+
+### Create parameter
+
+Create new parameter.
+
+Request:
+
+```applescript
+# Endpoint
+POST /v1/parameters
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Parameter object
+{
+    "name": "New Parameter",
+    "description": "Description of new one",
+    "comp_type": "select",
+    "data_type": "string",
+    "options": [
+        "01",
+        "02",
+        "03"
+    ]
+}
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single parameter object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPOST \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTk0NjYxMjQsImlzcyI6Imx5cmUtYmUtdjQifQ.Lif2940XSSRleQ2AA0qLLNYFt9ZGxyVeipOPrx7WAIc" \
+-H "Content-Type: application/json" \
+-d '{"name":"New Parameter", "comp_type": "select", "data_type": "string", "options":["001"]}' \
+localhost:8443/v1/parameters
+
+< HTTP/1.1 200 OK
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization
+< Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+< Content-Type: application/json
+< Date: Mon, 04 Jul 2022 20:22:30 GMT
+< Content-Length: 184
+< 
+{
+    "id": "62c34c069fa2a6650a510e6f",
+    "name": "New Parameter",
+    "description": "",
+    "comp_type": "select",
+    "data_type": "string",
+    "options": [
+        "001"
+    ]
+}
+```
+
+### Update parameter
+
+Please note, that because of MongoDB specific, this request actually replaces the whole document.  
+
+This is the Update - so, all references to this object will be preserved. 
+
+Request:
+
+```applescript
+# Endpoint
+PUT /v1/parameters/{ID}
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Parameter object
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Parameter object
+```
+
+Examples:
+
+```applescript
+# Request
+curl -v -XPUT \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI2MjQzMzA4Mzk5ZmQ1OWMxNzZjNTJmZDQiLCJleHAiOjE2NTk0NjYxMjQsImlzcyI6Imx5cmUtYmUtdjQifQ.Lif2940XSSRleQ2AA0qLLNYFt9ZGxyVeipOPrx7WAIc" \
+-H "Content-Type: application/json" \
+-d '{"name":"New Parameter Changed", "comp_type": "select", "data_type": "string", "options":["002"]}' \
+localhost:8443/v1/parameters/62c34c069fa2a6650a510e6f
+
+# Response
+< HTTP/1.1 200 OK
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token
+< Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+< Content-Type: application/json
+< Date: Sun, 29 May 2022 15:38:26 GMT
+< Content-Length: 140
+<
+{
+    "id": "62c34c069fa2a6650a510e6f",
+    "name": "New Parameter Changed",
+    "description": "",
+    "comp_type": "select",
+    "data_type": "string",
+    "options": [
+        "002"
+    ]
+}
+```
+
+### Remove parameter
+Removes parameter document from `parameters` collection.  
+
+Request:
+
+```applescript
+# Endpoint
+DELETE /v1/parameters/{ID}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+204 No content
+400 Bad request
+403 Forbidden
+503 Internal server error
+```
+
+Please note, the `DELETE` method returns empty body. Only the status code.
+
+
+## Manage Settings
+Settings is a relation between user, application and parameters for this application. 
+To assign settings to user, create parameters, create setting document and add setting id to user's settings array.
+
+Structure of settings collections:
+
+```javascript
+{
+        "_id" : ObjectId("62c1c1c95e329ab2f7f8b0ee"),
+        "user_id" : ObjectId("6243308399fd59c176c52fd4"),
+        "app_id" : ObjectId("6242d43e99fd59c176c52fd3"),
+        "parameters" : [
+                ObjectId("62b827d15e329ab2f7f8b0e9"),
+                ObjectId("62b828485e329ab2f7f8b0ea")
+        ]
+}
+```
+
+### List Settings
+
+List all settings. Returns an array of settings objects.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/settings
+
+# Parameters
+user_id
+app_id
+user_id, app_id
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Array of setting objects
+```
+
+### Show specific parameter
+
+Get setting by ID. Returns single setting object.
+
+Request:
+
+```applescript
+# Endpoint
+GET /v1/settings/{id}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single setting object
+```
+
+### Create setting
+
+Create new setting object.
+
+Request:
+
+```applescript
+# Endpoint
+POST /v1/setting
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Setting object
+{
+    "user_id" : "6243308399fd59c176c52fd4",
+    "app_id" : "6242d43e99fd59c176c52fd3",
+    "parameters" : [
+            "62b827d15e329ab2f7f8b0e9",
+            "62b828485e329ab2f7f8b0ea"
+    ]
+}
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Single parameter object
+```
+
+### Update setting
+
+Please note, that because of MongoDB specific, this request actually replaces the whole document.  
+
+This is the Update - so, all references to this object will be preserved. 
+
+Request:
+
+```applescript
+# Endpoint
+PUT /v1/settings/{ID}
+
+# Expected content type
+Content-Type: "application/json"
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+# Setting object
+```
+
+Response:
+
+```applescript
+# Expected status codes
+200 OK
+400 Bad request
+403 Forbidden
+503 Internal server error
+
+# Body
+Setting object
+```
+
+### Remove setting
+Removes setting document from `settings` collection.  
+
+Request:
+
+```applescript
+# Endpoint
+DELETE /v1/settings/{ID}
+
+# Expected authentication header
+Authorization: Bearer TOKEN
+
+# Payload
+No payload required for this request
+```
+
+Response:
+
+```applescript
+# Expected status codes
+204 No content
+400 Bad request
+403 Forbidden
+503 Internal server error
+```
+
+Please note, the `DELETE` method returns empty body. Only the status code.
 
 # Internals
 ## ACL

@@ -26,6 +26,7 @@ type UserScheme struct {
 	Password    *string              `bson:"password" json:"password,omitempty"`
 	ACL         []ApplicationScheme  `bson:"acl" json:"acl,omitempty"`
 	Roles       []primitive.ObjectID `bson:"roles" json:"roles"`
+	Settings    []primitive.ObjectID `bson:"settings" json:"settings"`
 	Avatar      string               `bson:"avatar" json:"avatar"`
 	FirstName   string               `bson:"first_name" json:"first_name"`
 	LastName    string               `bson:"last_name" json:"last_name"`
@@ -232,7 +233,7 @@ func (u *User) Create(user *UserScheme) (string, error) {
 }
 
 // MarshalJSON cleans password field on response
-// as a result, because of "omitempty", there is no "password field" in respone
+// as a result, because of "omitempty", there is no "password field" in response
 func (u *UserScheme) MarshalJSON() ([]byte, error) {
 	type tmp UserScheme
 

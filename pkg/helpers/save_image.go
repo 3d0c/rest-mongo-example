@@ -27,7 +27,7 @@ func ParseAndSaveImage(p string) (string, error) {
 
 	init := strings.Index(p, "/")
 	end := strings.Index(p, ";")
-	filetype := string(p[init+1 : end])
+	filetype := p[init+1 : end]
 
 	filename = uuid.New().String() + "." + filetype
 
@@ -47,7 +47,7 @@ func ParseAndSaveImage(p string) (string, error) {
 
 	filename = filepath.Join(config.TheConfig().Server.Static, filename)
 
-	if err = ioutil.WriteFile(filename, buff.Bytes(), 0644); err != nil {
+	if err = ioutil.WriteFile(filename, buff.Bytes(), 0600); err != nil {
 		return "", err
 	}
 

@@ -268,5 +268,114 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 		),
 	)
 
+	// Parameters management
+	// List all parameters
+	r.Get(
+		filepath.Join(root, "/parameters"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			parametersHandler().get,
+		),
+	)
+	// Get specific parameter
+	r.Get(
+		filepath.Join(root, "/parameters/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			parametersHandler().getByID,
+		),
+	)
+	// Create parameter
+	r.Post(
+		filepath.Join(root, "/parameters"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			parametersHandler().create,
+		),
+	)
+	// Update parameter
+	r.Put(
+		filepath.Join(root, "/parameters/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			parametersHandler().update,
+		),
+	)
+	// Remove role
+	r.Delete(
+		filepath.Join(root, "/parameters/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			parametersHandler().remove,
+		),
+	)
+
+	// Settings management
+	// List all settings
+	// @TODO should be available for admin user only
+	// This endpoint accepts following parameters:
+	// ?user_id=
+	// ?app_id=
+	// ?user_id=&app_id
+	r.Get(
+		filepath.Join(root, "/settings"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			settingsHandler().get,
+		),
+	)
+	// Get specific setting
+	r.Get(
+		filepath.Join(root, "/settings/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			settingsHandler().getByID,
+		),
+	)
+	// Create setting
+	r.Post(
+		filepath.Join(root, "/settings"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			settingsHandler().create,
+		),
+	)
+	// Update setting
+	r.Put(
+		filepath.Join(root, "/settings/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			settingsHandler().update,
+		),
+	)
+	// Remove setting
+	r.Delete(
+		filepath.Join(root, "/setting/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			settingsHandler().remove,
+		),
+	)
+
 	return r
 }
