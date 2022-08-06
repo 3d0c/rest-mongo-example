@@ -377,5 +377,17 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 		),
 	)
 
+	// Document view
+	// Get documents list
+	r.Get(
+		filepath.Join(root, "/docview"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			docviewHandler().get,
+		),
+	)
+
 	return r
 }
