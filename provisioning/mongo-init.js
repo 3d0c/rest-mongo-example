@@ -37,6 +37,11 @@ db.applications.insertMany([
         "_id" : ObjectId("62c1e55d5e329ab2f7f8b0f0"),
         "name" : "Settings management",
         "path" : "/settings"
+    },
+    {
+        "_id" : ObjectId("62eebee180e2b96494b6bf95"),
+        "name" : "Document Viewer",
+        "path" : "/docview"
     }    
 ]);
 
@@ -52,7 +57,8 @@ db.roles.insertMany([
             ObjectId("6245984799fd59c176c52fd5"),
             ObjectId("62937983ec569fe63ccffebc"),
             ObjectId("62c1e55b5e329ab2f7f8b0ef"),
-            ObjectId("62c1e55d5e329ab2f7f8b0f0")
+            ObjectId("62c1e55d5e329ab2f7f8b0f0"),
+            ObjectId("62eebee180e2b96494b6bf95")
         ]
     }
 ]);

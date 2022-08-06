@@ -31,11 +31,24 @@ type Database struct {
 	Timeout int
 }
 
+// Docview config section
+type Docview struct {
+	Path string
+}
+
+// SAP config section
+type SAP struct {
+	Auth    string
+	DocList string
+	DocGet  string
+}
+
 // Config is a complete config file
 type Config struct {
 	Server
 	Logger
 	Database
+	SAP
 }
 
 // TheConfig config singleton
