@@ -49,6 +49,7 @@ type Config struct {
 	Logger
 	Database
 	SAP
+	Docview
 }
 
 // TheConfig config singleton

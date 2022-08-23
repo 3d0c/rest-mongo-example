@@ -23,4 +23,4 @@ docview:
 sap:
   auth: "Basic amt1bGFtOm1hZGl4MTI="
   docList: "https://madixinc.apimanagement.us21.hana.ondemand.com/v1/rf/zgws_documentlist"
-  docGet: "http://sapps200.madixinc.com:8000/sap/bc/zsd_rest_test/ZRFM_LAPP_GETDOC_BIN"
+  docGet: "https://madixinc.apimanagement.us21.hana.ondemand.com/v1/rf/zgws_getdocument"

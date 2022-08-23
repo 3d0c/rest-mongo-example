@@ -388,6 +388,16 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 			docviewHandler().get,
 		),
 	)
+	// Get document's file
+	r.Get(
+		filepath.Join(root, "/docview/{ID}"),
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			docviewHandler().getFile,
+		),
+	)
 
 	return r
 }

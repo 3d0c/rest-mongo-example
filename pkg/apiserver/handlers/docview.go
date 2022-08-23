@@ -3,8 +3,12 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi"
 
 	"github.com/teal-seagull/lyre-be-v4/pkg/apiserver/models"
+	"github.com/teal-seagull/lyre-be-v4/pkg/config"
 )
 
 type docview struct {
@@ -37,4 +41,34 @@ func (*docview) get(_ http.ResponseWriter, r *http.Request) (interface{}, int, e
 	}
 
 	return result, http.StatusOK, nil
+}
+
+func (*docview) getFile(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
+	var (
+		id   = chi.URLParam(r, "ID")
+		path = config.TheConfig().Docview.Path
+		name string
+		m    *models.Document
+		err  error
+	)
+
+	if id == "" {
+		return nil, http.StatusInternalServerError, fmt.Errorf("wrong request, item and typeid are mandatory")
+	}
+
+	if m, err = models.NewDocument(); err != nil {
+		return nil, http.StatusInternalServerError, fmt.Errorf("error initializing DocView model - %s", err)
+	}
+
+	if name, err = m.Download(id, path); err != nil {
+		return nil, http.StatusInternalServerError, fmt.Errorf("error downloading document content - %s", err)
+	}
+
+	w.Header().Set(
+		"Content-Disposition", "attachment; filename="+strconv.Quote(name))
+	w.Header().Set("Content-Type", "application/octet-stream")
+
+	http.ServeFile(w, r, path+name)
+
+	return nil, http.StatusOK, nil
 }
