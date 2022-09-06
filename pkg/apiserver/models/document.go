@@ -69,7 +69,7 @@ func (d *Document) Download(id string, path string) (string, error) {
 	}
 	type access struct {
 		FileName   string `json:"COMP_ID"`
-		FileSize   string `json:"COMP_SIZE"`
+		FileSize   int    `json:"COMP_SIZE"`
 		MimeType   string `json:"MIMETYPE"`
 		CreatedAt  string `json:"CREA_TIME"`
 		ChangedAt  string `json:"CHNG_TIME"`
@@ -82,8 +82,8 @@ func (d *Document) Download(id string, path string) (string, error) {
 	}
 
 	var (
-		req     *sap.Request
-		list    SAPDocList
+		req *sap.Request
+		// list    SAPDocList
 		result  SAPresult
 		payload []byte
 		err     error
@@ -101,7 +101,7 @@ func (d *Document) Download(id string, path string) (string, error) {
 		return "", fmt.Errorf("error creating SAP request - %s", err)
 	}
 
-	if err = req.Do(&list); err != nil {
+	if err = req.Do(&result); err != nil {
 		return "", fmt.Errorf("error doing request - %s", err)
 	}
 
