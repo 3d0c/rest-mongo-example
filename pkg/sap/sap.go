@@ -1,6 +1,7 @@
 package sap
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -23,7 +24,7 @@ type Request struct {
 }
 
 // NewRequest returns initialized SAP request
-func NewRequest(method, url string) (*Request, error) {
+func NewRequest(method, url string, body []byte) (*Request, error) {
 	var (
 		req *Request = &Request{
 			Request: new(http.Request),
@@ -33,7 +34,12 @@ func NewRequest(method, url string) (*Request, error) {
 
 	req.ctx, req.cancel = context.WithTimeout(context.Background(), timeout)
 
-	if req.Request, err = http.NewRequestWithContext(req.ctx, method, url, nil); err != nil {
+	if len(body) == 0 {
+		req.Request, err = http.NewRequestWithContext(req.ctx, method, url, nil)
+	} else {
+		req.Request, err = http.NewRequestWithContext(req.ctx, method, url, bytes.NewReader(body))
+	}
+	if err != nil {
 		return nil, fmt.Errorf("error creating request - %s", err)
 	}
 

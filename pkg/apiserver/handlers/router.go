@@ -1,12 +1,14 @@
 package handlers
 
 import (
-	"path/filepath"
+	"net/http"
 
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 
 	"github.com/teal-seagull/lyre-be-v4/pkg/apiserver/middlewares"
 	"github.com/teal-seagull/lyre-be-v4/pkg/config"
+	"github.com/teal-seagull/lyre-be-v4/pkg/log"
 )
 
 // SetupRouter sets up endpoints
@@ -23,7 +25,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	// Authentication
 	// Login. Available for all
 	r.Post(
-		filepath.Join(root, "/sessions"),
+		root+"/sessions",
 		middlewares.Chain(
 			middlewares.IsValidContentType,
 			sessionsHandler().create,
@@ -31,7 +33,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Logout
 	r.Delete(
-		filepath.Join(root, "/sessions"),
+		root+"/sessions",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -42,7 +44,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	// Users management
 	// List all users in the system
 	r.Get(
-		filepath.Join(root, "/users"),
+		root+"/users",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -52,7 +54,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Get specific user
 	r.Get(
-		filepath.Join(root, "/users/{ID}"),
+		root+"/users/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -62,7 +64,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Create user
 	r.Post(
-		filepath.Join(root, "/users"),
+		root+"/users",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -72,7 +74,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Update user
 	r.Put(
-		filepath.Join(root, "/users/{ID}"),
+		root+"/users/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -82,7 +84,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Update user password
 	r.Put(
-		filepath.Join(root, "/users/{ID}/password"),
+		root+"/users/{ID}/password",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -92,7 +94,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Remove user
 	r.Delete(
-		filepath.Join(root, "/users/{ID}"),
+		root+"/users/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -104,7 +106,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	// User controller. Used to get user from token
 	// Get current user
 	r.Get(
-		filepath.Join(root, "/user"),
+		root+"/user",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -115,7 +117,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	// Applications management
 	// List all applications
 	r.Get(
-		filepath.Join(root, "/applications"),
+		root+"/applications",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -125,7 +127,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Get specific application
 	r.Get(
-		filepath.Join(root, "/applications/{ID}"),
+		root+"/applications/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -135,7 +137,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Create application
 	r.Post(
-		filepath.Join(root, "/applications"),
+		root+"/applications",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -145,7 +147,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Update applications
 	r.Put(
-		filepath.Join(root, "/applications/{ID}"),
+		root+"/applications/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -155,7 +157,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Remove application
 	r.Delete(
-		filepath.Join(root, "/applications/{ID}"),
+		root+"/applications/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -167,7 +169,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	// Permissions management
 	// List all permissions
 	r.Get(
-		filepath.Join(root, "/permissions"),
+		root+"/permissions",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -177,7 +179,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Get specific application
 	r.Get(
-		filepath.Join(root, "/permissions/{ID}"),
+		root+"/permissions/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -187,7 +189,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Create permission
 	r.Post(
-		filepath.Join(root, "/permissions"),
+		root+"/permissions",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -197,7 +199,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Update permission
 	r.Put(
-		filepath.Join(root, "/permissions/{ID}"),
+		root+"/permissions/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -207,7 +209,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Remove application
 	r.Delete(
-		filepath.Join(root, "/permissions/{ID}"),
+		root+"/permissions/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -219,7 +221,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	// Roles management
 	// List all roles
 	r.Get(
-		filepath.Join(root, "/roles"),
+		root+"/roles",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -229,7 +231,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Get specific role
 	r.Get(
-		filepath.Join(root, "/roles/{ID}"),
+		root+"/roles/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -239,7 +241,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Create role
 	r.Post(
-		filepath.Join(root, "/roles"),
+		root+"/roles",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -249,7 +251,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Update role
 	r.Put(
-		filepath.Join(root, "/roles/{ID}"),
+		root+"/roles/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -259,7 +261,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Remove role
 	r.Delete(
-		filepath.Join(root, "/roles/{ID}"),
+		root+"/roles/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -271,7 +273,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	// Parameters management
 	// List all parameters
 	r.Get(
-		filepath.Join(root, "/parameters"),
+		root+"/parameters",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -281,7 +283,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Get specific parameter
 	r.Get(
-		filepath.Join(root, "/parameters/{ID}"),
+		root+"/parameters/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -291,7 +293,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Create parameter
 	r.Post(
-		filepath.Join(root, "/parameters"),
+		root+"/parameters",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -301,7 +303,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Update parameter
 	r.Put(
-		filepath.Join(root, "/parameters/{ID}"),
+		root+"/parameters/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -311,7 +313,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Remove role
 	r.Delete(
-		filepath.Join(root, "/parameters/{ID}"),
+		root+"/parameters/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -328,7 +330,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	// ?app_id=
 	// ?user_id=&app_id
 	r.Get(
-		filepath.Join(root, "/settings"),
+		root+"/settings",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -338,7 +340,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Get specific setting
 	r.Get(
-		filepath.Join(root, "/settings/{ID}"),
+		root+"/settings/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -348,7 +350,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Create setting
 	r.Post(
-		filepath.Join(root, "/settings"),
+		root+"/settings",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -358,7 +360,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Update setting
 	r.Put(
-		filepath.Join(root, "/settings/{ID}"),
+		root+"/settings/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -368,7 +370,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	)
 	// Remove setting
 	r.Delete(
-		filepath.Join(root, "/setting/{ID}"),
+		root+"/setting/{ID}",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -380,7 +382,7 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 	// Document view
 	// Get documents list
 	r.Get(
-		filepath.Join(root, "/docview"),
+		root+"/docview",
 		middlewares.Chain(
 			middlewares.IsAuthorized,
 			middlewares.GetUser,
@@ -388,6 +390,25 @@ func SetupRouter(cfg config.Server) *chi.Mux {
 			docviewHandler().get,
 		),
 	)
+	// Get document's file
+	r.Get(
+		root+"/docview/{ID}",
+		middlewares.Chain(
+			middlewares.IsAuthorized,
+			middlewares.GetUser,
+			middlewares.IsPermit,
+			docviewHandler().getFile,
+		),
+	)
+
+	walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+		log.TheLogger().Debug("registered", zap.String("method", method), zap.String("route", route))
+		return nil
+	}
+
+	if err := chi.Walk(r, walkFunc); err != nil {
+		log.TheLogger().Debug("logging error", zap.Error(err))
+	}
 
 	return r
 }

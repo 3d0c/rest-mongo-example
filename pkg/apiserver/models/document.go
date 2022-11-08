@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -41,6 +42,7 @@ func (d *Document) Find(item string, typ string) ([]DocumentScheme, error) {
 	if req, err = sap.NewRequest(
 		"GET",
 		config.TheConfig().SAP.DocList,
+		nil,
 	); err != nil {
 		return nil, fmt.Errorf("error creating SAP request - %s", err)
 	}
@@ -56,6 +58,59 @@ func (d *Document) Find(item string, typ string) ([]DocumentScheme, error) {
 	}
 
 	return list.ToDocumentList(), nil
+}
+
+// Download creates a request to SAP to download file by ID to the local server to provided path
+// It returns requested file name if it has been downloaded or empty if not found
+func (d *Document) Download(id string, path string) (string, error) {
+	type request struct {
+		ID   string `json:"ip_fileid"`
+		Path string `json:"ip_serverpath"`
+	}
+	type access struct {
+		FileName   string `json:"COMP_ID"`
+		FileSize   int    `json:"COMP_SIZE"`
+		MimeType   string `json:"MIMETYPE"`
+		CreatedAt  string `json:"CREA_TIME"`
+		ChangedAt  string `json:"CHNG_TIME"`
+		BinaryFlag string `json:"BINARY_FLG"`
+		FirstLine  int    `json:"FIRST_LINE"`
+		LastLine   int    `json:"LAST_LINE"`
+	}
+	type SAPresult struct {
+		Access []access `json:"ET_ACCESS"`
+	}
+
+	var (
+		req *sap.Request
+		// list    SAPDocList
+		result  SAPresult
+		payload []byte
+		err     error
+	)
+
+	if payload, err = json.Marshal(request{ID: id, Path: path}); err != nil {
+		return "", fmt.Errorf("error creating request payload - %s", err)
+	}
+
+	if req, err = sap.NewRequest(
+		"PUT",
+		config.TheConfig().SAP.DocGet,
+		payload,
+	); err != nil {
+		return "", fmt.Errorf("error creating SAP request - %s", err)
+	}
+
+	if err = req.Do(&result); err != nil {
+		return "", fmt.Errorf("error doing request - %s", err)
+	}
+
+	if len(result.Access) == 0 {
+		// @TODO Custom error here
+		return "", nil
+	}
+
+	return result.Access[0].FileName, nil
 }
 
 // SAPDoc is a structure for mapping SAP response
