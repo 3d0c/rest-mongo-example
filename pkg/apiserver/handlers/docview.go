@@ -64,6 +64,14 @@ func (*docview) getFile(w http.ResponseWriter, r *http.Request) (interface{}, in
 		return nil, http.StatusInternalServerError, fmt.Errorf("error downloading document content - %s", err)
 	}
 
+	// Manually adding CORS here, because this request is ignored by chain view
+	if origin := r.Header.Get("Origin"); origin != "" {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+	}
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
 	w.Header().Set(
 		"Content-Disposition", "attachment; filename="+strconv.Quote(name))
 	w.Header().Set("Content-Type", "application/octet-stream")
