@@ -26,6 +26,11 @@ func Chain(m ...Middlewares) http.HandlerFunc {
 			}
 		}
 
+		// Skip output for getfile middleware
+		if w.Header().Get("Content-Disposition") != "" {
+			return
+		}
+
 		// CORS
 		if origin := r.Header.Get("Origin"); origin != "" {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
