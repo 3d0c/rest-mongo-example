@@ -72,7 +72,11 @@ func (u *users) create(_ http.ResponseWriter, r *http.Request) (interface{}, int
 	)
 
 	if err = render.Bind(r, request); err != nil {
-		return nil, http.StatusBadRequest, fmt.Errorf("error binding input data - %s", err)
+		status := http.StatusBadRequest
+		if err == models.ErrSapUserNotFound {
+			status = http.StatusUnauthorized
+		}
+		return nil, status, fmt.Errorf("error binding input data - %s", err)
 	}
 
 	if current = r.Context().Value(models.UserSchemeType{}).(*models.UserScheme); current == nil {
@@ -110,7 +114,11 @@ func (u *users) update(_ http.ResponseWriter, r *http.Request) (interface{}, int
 	)
 
 	if err = render.Bind(r, request); err != nil {
-		return nil, http.StatusBadRequest, fmt.Errorf("error binding input data - %s", err)
+		status := http.StatusBadRequest
+		if err == models.ErrSapUserNotFound {
+			status = http.StatusUnauthorized
+		}
+		return nil, status, fmt.Errorf("error binding input data - %s", err)
 	}
 
 	if current = r.Context().Value(models.UserSchemeType{}).(*models.UserScheme); current == nil {
