@@ -118,7 +118,9 @@ func ValidateUser(u string, p string) error {
 		err    error
 	)
 
-	if req, err = NewRequest(
+	if req, err = NewUserRequest(
+		u,
+		p,
 		"GET",
 		config.TheConfig().SAP.UserTest,
 		nil,
