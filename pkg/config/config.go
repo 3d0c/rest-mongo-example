@@ -38,9 +38,11 @@ type Docview struct {
 
 // SAP config section
 type SAP struct {
-	Auth    string
-	DocList string
-	DocGet  string
+	Auth         string
+	DocList      string
+	DocGet       string
+	UserTest     string
+	ValidateUser bool
 }
 
 // Config is a complete config file

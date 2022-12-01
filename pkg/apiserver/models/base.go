@@ -14,6 +14,8 @@ var (
 
 	// ErrNotFound error type
 	ErrNotFound = errors.New("nothing found")
+	// ErrSapUserNotFound SAP user validation error
+	ErrSapUserNotFound = errors.New("SAP user not found")
 )
 
 type base struct {

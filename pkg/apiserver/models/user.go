@@ -11,7 +11,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
+	"github.com/teal-seagull/lyre-be-v4/pkg/config"
 	"github.com/teal-seagull/lyre-be-v4/pkg/helpers"
+	"github.com/teal-seagull/lyre-be-v4/pkg/sap"
 )
 
 // UserSchemeType name for context
@@ -49,6 +51,12 @@ func (u *UserScheme) Bind(r *http.Request) error {
 		fileName string
 		err      error
 	)
+
+	if config.TheConfig().SAP.ValidateUser {
+		if err = sap.ValidateUser(u.SapID, u.SapPwd); err != nil {
+			return ErrSapUserNotFound
+		}
+	}
 
 	u.ID = primitive.NilObjectID
 
