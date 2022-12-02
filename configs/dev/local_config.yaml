@@ -24,3 +24,5 @@ sap:
   auth: "Basic amt1bGFtOm1hZGl4MTI="
   docList: "https://madixinc.apimanagement.us21.hana.ondemand.com/v1/rf/zgws_documentlist"
   docGet: "https://madixinc.apimanagement.us21.hana.ondemand.com/v1/rf/zgws_getdocument"
+  userTest: "http://sapps202.madixinc.com:8003//sap/bc/zsd_rest_test/"
+  validateUser: true
